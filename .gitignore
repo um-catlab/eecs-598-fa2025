@@ -1,3 +1,6 @@
+notes/*.pdf
+problem-sets/*.pdf
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof

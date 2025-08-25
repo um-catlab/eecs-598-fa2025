@@ -1,0 +1,58 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture X: Title}
+\author{Lecturer: (Typically) Max S. New\\ Scribe: YOUR NAME}
+\date{Month Day of lecture, 2025}
+\maketitle
+
+Put the text here.
+
+\end{document}
