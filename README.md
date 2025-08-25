@@ -11,7 +11,7 @@ you add your name to one of the open slots.
 
 | Problem Set | Presenter 1 | Presenter 2 | Presenter 3 (if necessary) |
 |:-----------:|-------------|-------------|----------------------------|
-| PS1         |             |             |                            |
+| PS1         | Ivan Wei    |             |                            |
 | PS2         |             |             |                            |
 | PS3         |             |             |                            |
 | PS4         |             |             |                            |
@@ -31,7 +31,7 @@ Schedule:
 | Meeting Date | Scribe     |
 |:------------:|------------|
 | Mon, Aug 25  | Max S. New |
-| Wed, Aug 27  |            |
+| Wed, Aug 27  | Ivan Wei   |
 | Wed, Sep 03  |            |
 | Mon, Sep 08  |            |
 | Wed, Sep 10  |            |
