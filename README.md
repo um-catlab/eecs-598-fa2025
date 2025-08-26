@@ -33,7 +33,7 @@ Schedule:
 | Mon, Aug 25  | Max S. New |
 | Wed, Aug 27  | Ivan Wei   |
 | Wed, Sep 03  |            |
-| Mon, Sep 08  |            |
+| Mon, Sep 08  |A Bandukwala|
 | Wed, Sep 10  |            |
 | Mon, Sep 15  |            |
 | Wed, Sep 17  |            |
