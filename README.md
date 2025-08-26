@@ -13,7 +13,7 @@ you add your name to one of the open slots.
 |:-----------:|-------------|-------------|----------------------------|
 | PS1         | Ivan Wei    |             |                            |
 | PS2         |             |             |                            |
-| PS3         |             |             |                            |
+| PS3         |   Ayan C    |             |                            |
 | PS4         |             |             |                            |
 | PS5         |             |             |                            |
 | PS6         |             |             |                            |
@@ -32,7 +32,7 @@ Schedule:
 |:------------:|------------|
 | Mon, Aug 25  | Max S. New |
 | Wed, Aug 27  | Ivan Wei   |
-| Wed, Sep 03  |            |
+| Wed, Sep 03  |   Ayan C   |
 | Mon, Sep 08  |            |
 | Wed, Sep 10  |            |
 | Mon, Sep 15  |            |
