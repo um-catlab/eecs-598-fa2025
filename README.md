@@ -12,7 +12,7 @@ you add your name to one of the open slots.
 | Problem Set | Presenter 1 | Presenter 2 | Presenter 3 (if necessary) |
 |:-----------:|-------------|-------------|----------------------------|
 | PS1         | Ivan Wei    |             |                            |
-| PS2         |             |             |                            |
+| PS2         | Jesse Slater|             |                            |
 | PS3         |   Ayan C    |             |                            |
 | PS4         |             |             |                            |
 | PS5         |             |             |                            |
@@ -34,7 +34,7 @@ Schedule:
 | Wed, Aug 27  | Ivan Wei   |
 | Wed, Sep 03  |   Ayan C   |
 | Mon, Sep 08  |A Bandukwala|
-| Wed, Sep 10  |            |
+| Wed, Sep 10  |Jesse Slater|
 | Mon, Sep 15  |            |
 | Wed, Sep 17  |            |
 | Mon, Sep 22  |            |
