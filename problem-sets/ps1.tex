@@ -1,0 +1,218 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{lemma}{Lemma}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 1}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\textrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\textrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\begin{document}
+
+\title{Problem Set 1: Logic and Order Theory}
+\date{Released: August 28, 2025\\ Due: September 11, 2025, 11:59pm}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2 or
+3. Your solutions must be submitted in pdf produced using LaTeX.
+
+If you haven't already, sign up to scribe and present homework
+solutions on the course github repo.
+
+%% \begin{definition}
+%%   A Heyting Algebra $X$ is a preordered set equipped with a top
+%%   element and for any two elements $x, y \in X$, a meet $x \wedge y$
+%%   and an implication $x \supset y$.
+
+%%   A biHeyting Algebra is a Heyting algebra that further is equipped
+%%   with a least element and for any two elements $x,y$ a join $x \vee
+%%   y$.
+%% \end{definition}
+
+\begin{problem}{Distributivity}
+  A lattice (poset with finite meets and joins) is \emph{distributive}
+  when binary meets and joins satisfy a distributive law:
+  \[ x \wedge (y \vee z) = (x \wedge y) \vee (x \wedge z) \]
+
+  We say that propositions $A$ and $B$ of a logic are
+  \emph{equivalent} when the judgments $A \vdash B$ and $B \vdash A$
+  are both provable.
+
+  \begin{enumerate}
+  \item Show that IPL satisfies this distributive law in that for any
+    propositions $A, B, C$, the propositions $A \wedge (B \vee C)$ and
+    $(A \wedge B) \vee (A \wedge C)$ are equivalent.
+  \item Show that any biHeyting algebra (poset with finite meets, finite joins
+    and an implication operation) is a distributive lattice.
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{Intuitionistic and Classical Logic}
+  The law of excluded middle or principle of omniscience is the
+  following axiom scheme: for all propositions $A$ the axiom
+  \[
+  \inferrule
+  {~}
+  {\Gamma \vdash A \vee \neg A}
+  \]
+  The law of double negation elimination is the axiom scheme
+  \[
+  \inferrule
+  {~}
+  {\Gamma \vdash \neg(\neg A) \supset A}
+  \]
+
+  Since the first non-boolean model of IPL that we saw is a 3 element
+  Heyting algebra, it is easy to get the impression that
+  intuitionistic logic is about ``multi-valued logics'' where there
+  are some ``intermediate'' truth value other than just true and
+  false. But this is misleading. Firstly, there are many boolean
+  algebras with more than 2 elements (the powerset of any set) that
+  are models of classical logic. Secondly, while there are more than 2
+  elements in a model, \emph{within} the logic, we can never separate
+  any proposition from true and false.
+
+  \begin{enumerate}
+  \item Show that in IPL extended with the law of excluded middle, the
+    law of double negation elimination is admissible and vice-versa.
+  \item The following might be called the ``intuitionistic law of
+    excluded middle'', for all $\Gamma, A$:
+    \[ \inferrule*{~}{\Gamma \vdash \neg (\neg (A \iff \top) \wedge \neg (A \iff \bot))} \]
+    Intuitively this says ``no proposition is not equivalent to true
+    and not equivalent to false'', where we are using the notations
+    $\neg B = (B \supset \bot)$ and $B \iff C = (B \supset C) \wedge
+    (C \supset B)$.
+
+    Show that the intuitionistic law of excluded middle is derivable
+    for all $A$ in IPL. A full proof tree for this will be quite
+    large, so I encourage you to develop intermediate reasoning
+    principles to make this proof clearer.
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{Conservativity Results}
+  Fix a signature with propositional variables, but no axioms. In this
+  problem our goal is to prove that $\iplneg$ is a \emph{conservative
+  extension} of $\iplmeets$\footnote{This conservativity result also
+  holds when both have disjunction, but the proof is slightly more
+  complex}. That is, we will show that for any judgment $\Gamma \vdash
+  A$ where the propositions in $\Gamma, A$ are generated using only
+  $\top, \wedge$ and propositional variables, if there is a proof that
+  uses the implication $\supset$ then there is a proof that doesn't
+  use it. In other words, $\supset$ doesn't let us prove anything new
+  about propositions that don't involve $\supset$. This means that we
+  can use the richer logic of $\iplneg$ to prove results that hold in
+  any poset with finite meets, even those that don't support an
+  implication structure. And while $\supset$ can't allow us to prove
+  anything new, it might allow us to write a \emph{shorter} or more
+  \emph{intuitive} proof.
+
+  To prove conservativity, we will show that the inclusion (a monotone
+  function of posets) $i : \iplmeets \to \iplneg$ is an \emph{order
+  embedding}: if $i(A) \leq i(B)$ then $A \leq B$. Recall that the
+  ordering here is provability of the hypothetical judgment $\vdash$,
+  so this means if $A \vdash B$ in $\iplneg$ then $A \vdash B$ in
+  $\iplmeets$.
+
+  Key to this proof is the \emph{initiality} property of each variant of IPL:
+  \begin{itemize}
+  \item For any poset $P$ with finite meets and an assignment
+    $\sigma(X) \in P$ for each propositional variable, there is a
+    \emph{unique} monotone function $\overline \sigma : \iplmeets \to P$
+    that preserves finite meets and respects the assignment of
+    propositional variables $\overline \sigma(X) = \sigma(X)$.
+  \item An analogous property holds for $\iplneg$
+    but the poset $P$ must have an implication as well and $\overline
+    \sigma$ is the unique monotone function preserving finite meets and implication that
+    respects the assignment $\sigma$.
+  \end{itemize}
+
+  \begin{enumerate}
+  \item First, show that for any preorder $Q$, the set of downward-closed
+    subsets $\downset Q$ with subset inclusion as ordering
+    is a poset and a Heyting algebra.
+  \item Next, for any preorder $Q$ we can define a function $\down : Q \to \downset Q$ defined by $\down(x) = \{ y \,|\, y \leq x \}$.
+    \begin{itemize}
+    \item Show that $\down : Q \to \downset Q$ is monotone.
+    \item Show that $\down$ is an order embedding: if $\down(x) \leq \down(y)$ then $x \leq y$.
+    \item Show that $\down$ preserves finite meets that exist\footnote{though we do not need it for this problem, it also preserves any implications that exist}.
+    \end{itemize}
+  \item Show that if $i : P \to Q$ and $j : Q \to R$ are monotone
+    functions and $j \circ i : P \to R$ is an order embedding then $i$
+    is an order embedding.
+  \item Use the initiality property of $\iplneg$ to
+    construct a monotone function $f : \iplneg \to
+    {\downset \iplneg}$ that makes the following diagram
+    commute:
+    % https://q.uiver.app/?q=WzAsMyxbMCwxLCJJUEwoXFx0b3AsXFx3ZWRnZSkiXSxbMiwxLCJJUEwoXFx0b3AsXFx3ZWRnZSxcXHN1cHNldCkiXSxbMSwwLCJCb29sXntJUEwoXFx0b3AsIFxcd2VkZ2UpXm99Il0sWzAsMiwiWSJdLFswLDEsImkiLDJdLFsxLDIsIlxcb3ZlcmxpbmVcXHNpZ21hIiwyXV0=
+    \[\begin{tikzcd}
+	& {\downset {\iplmeets}} \\
+	{\iplmeets} && {\iplneg}
+	\arrow["\down", from=2-1, to=1-2]
+	\arrow["i"', from=2-1, to=2-3]
+	\arrow["f"', from=2-3, to=1-2]
+    \end{tikzcd}\]
+    Note that you will need to use the initiality of $\iplmeets$
+    to show the diagram commutes.
+  \end{enumerate}
+  Then since $\down$ is an embedding, we conclude that the inclusion $i$ is an
+  embedding.
+\end{problem}
+
+\end{document}
