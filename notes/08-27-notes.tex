@@ -1,0 +1,367 @@
+\documentclass[12pt]{article}
+
+\usepackage{proof}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage[only,llbracket,rrbracket]{stmaryrd}
+\usepackage{graphicx} % Required for inserting images
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{exercise}[theorem]{Exercise}
+
+\newcommand{\db}[1]{\llbracket #1 \rrbracket}
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+\setlength{\headheight}{14.49998pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 2: Boolean and Heyting Semantics of IPL}
+\author{Lecturer: Max S. New\\ Scribe: Ivan Wei}
+\date{August 27, 2025}
+\maketitle
+
+\maketitle
+
+\section{Admissibility of $\land E_1$}
+Is $\land E_1$ admissible in $\text{IPL} - \land E_1$? Well, you might think that if you believe that the only way of proving $A \land B$ is through rule $\land I$, but it can also be proved through rules like Assumption, Axiom, $\bot E$, and $\lor E$. In this case, assuming $A \land B$, you wouldn't be able to prove $A$ in $\text{IPL} - \land E_1$.
+
+\section{Consistency of IPL}
+In order to show IPL is \textit{useful}, we need to prove that it is consistent.
+
+\begin{definition}[Consistency]
+A logic is consistent provided that there exists $\Gamma, A$ for which $\Gamma \vdash A$ is not provable.
+\end{definition}
+
+If every $\Gamma \vdash A$ were provable, then a proof within that system provides no information.
+
+\begin{theorem}[Consistency of IPL]\label{ConsistencyIPL}
+IPL with no axioms is consistent, because $\cdot \vdash \bot$ is not provable.
+\end{theorem}
+
+\begin{remark}
+Recall that IPL is defined in the context of a set of axioms; IPL may not be consistent with some sets of axioms (for example, IPL with the axiom that false is true is not consistent).
+\end{remark}
+
+Why is $\cdot \vdash \bot$ not provable in IPL with no axioms? We first define the boolean semantics, an interpretation of IPL propositions as truth values.
+
+\subsection{Boolean Semantics}
+Let $\mathbb{B} = \{0, 1\}$, and $\mathcal{E}_0$ be the set of propositional variables in this IPL. Let $\sigma: \mathcal{E}_0 \to \mathbb{B}$ be a arbitrary boolean assignment of the propositional variables.
+
+We define an extension of $\sigma$ to a general map $\llbracket \cdot \rrbracket: \text{IPL Propositions} \to \mathbb{B}$, defined by:
+\begin{align*}
+x &\mapsto \sigma(x) \\
+\bot &\mapsto 0 \\
+\top &\mapsto 1 \\
+A \land B &\mapsto \min(\db{A}, \db{B}) \\
+A \lor B &\mapsto \max(\db{A}, \db{B}) \\
+A \Rightarrow B &\mapsto \begin{cases}0 & \db{A} = 1, \db{B} = 0 \\ 1 & \text{otherwise}\end{cases}
+\end{align*}
+Note that the definition for $\land$ implies that for a context $\Gamma$, $\db{\Gamma} = \min_{x \in \Gamma}\db{x}$. Also, $\db{\cdot} = 1$.
+
+\begin{theorem}\label{ProvableImpliesInequality}
+If $\Gamma \vdash A$ is provable, then $\db{\Gamma} \leq \db{A}$.
+\end{theorem}
+\begin{proof}
+Induction with casework over each rule.
+
+Examples:
+\begin{itemize}
+    \item Suppose $\Gamma \vdash A$ were proven via Assumption; that is,
+    \[\infer[\text{Assumption}]{\Gamma, A, \Delta \vdash A}{}\]
+    Well, in this case,
+    \[\db{\Gamma, A, \Delta} = \min(\min_{x \in \Gamma}\db{x}, \db{A}, \min_{y \in \Delta}\db{y}) \leq \db{A}\]
+    \item Suppose $\Gamma \vdash A$ were proven via $\bot E$; that is,
+    \[\infer[\bot E]{\Gamma \vdash A}{\infer{\Gamma \vdash \bot}{\vdots}}\]
+    By the inductive hypothesis, $\db{\Gamma} \leq \db{\bot} = 0$. Since $\db{\Gamma} \in \mathbb{B}$, $\db{\Gamma} = 0$. Since $\db{A} \in \mathbb{B}$, $\db{A} \geq 0$. Therefore, $\db{\Gamma} \leq \db{A}$.
+    \item and so on \dots
+\end{itemize}
+\end{proof}
+
+\begin{corollary}[Theorem \ref{ConsistencyIPL}]
+$\cdot \vdash \bot$ is not provable in IPL with no axioms. Hence, IPL is consistent.
+\end{corollary}
+\begin{proof}
+$\db{\cdot} = 1$, $\db{\bot} = 0$, meaning $\db{\cdot} > \db{\bot}$. By the contrapositive of Theorem \ref{ProvableImpliesInequality}, $\cdot \vdash \bot$ is not provable. 
+\end{proof}
+
+\section{Admissibility of DNI, DNE, LEM, and LNC}
+Recall that we defined $\neg A \coloneqq A \supset \bot$.
+
+We also wrote four reasonable rules:
+\[
+\infer[\text{Double Negation Elimination}]{\neg\neg A \vdash A}{}
+\]
+\[
+\infer[\text{Double Negation Introduction}]{A \vdash \neg\neg A}{}
+\]
+\[
+\infer[\text{Law of the Excluded Middle}]{\cdot \vdash A \lor \neg A}{}
+\]
+\[
+\infer[\text{Law of Non-Contradiction}]{\cdot \vdash \neg(A \land \neg A)}{}
+\]
+
+Which rules are admissible in IPL? Note that, since each of these rules has no hypotheses, the admissibility of these rules is equivalent to their derivability.
+
+\begin{theorem}
+DNI is derivable in IPL.
+\end{theorem}
+\begin{proof}
+\[
+\infer[\supset I]
+{A \vdash (A \supset \bot) \supset \bot}
+{
+    \infer[\supset E]
+    {A, (A \supset \bot) \vdash \bot}
+    {
+    \infer[\text{Assumption}]{A, (A \supset \bot) \vdash A \supset \bot}{} &
+    \infer[\text{Assumption}]{A, (A \supset \bot) \vdash A}{}
+    }
+}
+\]
+\end{proof}
+
+\begin{theorem}
+LNC is derivable in IPL.
+\end{theorem}
+\begin{proof}
+\[
+\infer[\supset I]
+{\cdot \vdash (A \land (A \supset \bot)) \supset \bot}
+{
+    \infer[\supset E]
+    {A \land (A \supset \bot) \vdash \bot}
+    {
+        \infer[\land E_2]{A \supset \bot}{
+            \infer[\text{Assumption}]{A \land (A \supset \bot) \vdash A \land (A \supset \bot)}{}
+        } &
+        \infer[\land E_1]{A}{
+            \infer[\text{Assumption}]{A \land (A \supset \bot) \vdash A \land (A \supset \bot)}{}
+        }
+    }
+}
+\]
+\end{proof}
+
+\begin{exercise}
+LEM and LNC are derivable in IPL($\varnothing$) (that is, IPL with no propositional variables).
+
+Hint: Induct over the structure of each proposition $A$.
+\end{exercise}
+
+\begin{remark}
+In essence, LEM and DNE are the distinction between classical and intuitionistic propositional logic.
+\[
+\text{Classical Propositional Logic (CPL)} = \text{IPL} + \text{either LEM or DNE}
+\]
+\end{remark}
+
+We now focus on proving a metatheorem: LEM and LNC are not derivable/admissible in IPL. This theorem cannot be proven in IPL, because IPL with LEM and LNC as axioms is consistent and work with the boolean semantics view (that is, their conclusions do not satisfy the hypothesis of the contrapositive of Theorem \ref{ProvableImpliesInequality}).
+
+Let's generalize our model of IPL as boolean semantics to some other interpretation of the operations on propositions. (This is called the model theory of IPL, or the order-theoretic semantics of IPL). In this way, we set up infrastructure to show that certain deductions can't be proven.
+
+\subsection{Bi-Heyting Semantics of IPL}
+What is the model of a propositional logic? It is an ordered set plus something unique to the propositional logic.
+
+\begin{definition}
+A \textbf{preordered set} $(X, \leq)$ is a set $X$ and binary relation $\leq$ on $X$ such that:
+\begin{itemize}
+    \item $\leq$ is \textbf{reflexive}: for all $x \in X$, $x \leq x$.
+    \item $\leq$ is \textbf{transitive}: for all $x, y, z \in X$, if $x \leq y$ and $y \leq z$, then $x \leq z$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+A \textbf{partially ordered set} $(X, \leq)$ is a preordered set where additionally, $\leq$ is \textbf{antisymmetric}: for all $x, y \in X$, if $x \leq y$ and $y \leq x$, then $x = y$.
+\end{definition}
+
+\begin{definition}
+Given a preordered set $X$, for any $x, y \in X$, $x$ is said to be \textbf{order equivalent} to $y$ if $x \leq y$ and $y \leq x$.
+\end{definition}
+
+\begin{remark}
+A partially ordered set can always be naturally constructed out of a preordered set, by taking the quotient of the preordered set with respect to order equivalence.
+\end{remark}
+
+\begin{remark}
+The IPL propositions generated by some signature $\mathcal{E}$, denoted $\operatorname{IPLProp}(\mathcal{E})$, are a preordered set under $\vdash$, but are not a partially ordered set under $\vdash$. This algebraic structure is called the \textbf{Lindenbaum algebra} of the logic.
+\end{remark}
+
+\begin{proof}~
+\begin{itemize}
+    \item Reflexive: for all propositions $A$,
+    \[
+    \infer[\text{Assumption}]{A \vdash A}{}
+    \]
+    \item Transitive: for all propositions $A, B, C$,
+    \[
+    \infer[\text{Substitution}]{A \vdash C}{
+    A \vdash B & \infer[\text{Weakening}]{A,B \vdash C}{B \vdash C}
+    }
+    \]
+    \item Not anti-symmetric: $A \land B$ and $B \land A$ are order equivalent, but not equal.
+\end{itemize}
+\end{proof}
+
+\begin{definition}
+Let $X$ be a preordered set. $P \subset X$ is said to be:
+\begin{itemize}
+    \item \textbf{downward-closed}, provided that for all $x \in P$ and $y \leq x$, that $y \in P$.
+    \item \textbf{upward-closed}, provided that for all $x \in P$ and $y \geq x$, that $y \in P$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+Let $X$ be a preordered set.
+
+The \textbf{principal downset} of an element $x$, denoted $\downarrow x$, is the set of all $y \in X$ for which $y \leq x$.
+
+The \textbf{principal upset} of an element $x$, denoted $\uparrow x$, is the set of all $y \in X$ for which $y \geq x$.
+\end{definition}
+
+\begin{definition}
+Let $X$ be a preordered set.
+
+For $x, y \in X$, $z$ is said to be the \textbf{meet} of $x$ and $y$ (denoted $x \land y$) provided that 
+\[\downarrow z = \{w \mid w \leq x, w \leq y\} = (\downarrow x) \cap (\downarrow y)\]
+\end{definition}
+
+\begin{remark}
+In some sense, this characterizes the invertible rule $\land I$.
+\end{remark}
+
+\begin{remark}
+The characterization of an element in terms of its relationships with others (i.e., meets and downsets) is an example of a \textbf{universal property}.
+\end{remark}
+
+\begin{remark}
+Warning: the meet is not necessarily unique! For example, in \\$(\operatorname{IPLProp}(\mathcal{E}), \vdash)$, $A \land B$ and $B \land A$ are both the meets of $A$ and $B$.
+\end{remark}
+
+\begin{remark}
+However, the meet is unique up to order equivalence.
+\end{remark}
+\begin{proof}
+Suppose $x, y, z_1, z_2 \in X$ such that $z_1$ and $z_2$ are both the meets of $x$ and $y$. This means that $\downarrow z_1 = \downarrow z_2$.
+
+$z_1 \in \downarrow z_1$ by reflexivity, and thus is in $\downarrow z_2$. By the definition of downset, this means $z_1 \leq z_2$. By a symmetric argument, $z_2 \leq z_1$.
+\end{proof}
+
+\begin{lemma}[Baby Yoneda's Lemma]
+For $X$ a preordered set and $P \subset X$,
+\[
+\downarrow x \subset P \iff x \in P
+\]
+\end{lemma}
+\begin{proof}
+$\implies$ $x$ is contained in its own downset by reflexivity of $\leq$.
+
+$\impliedby$ for all $y \leq x$, since $x \in P$ and $P$ is a downset, $y \in P$.
+\end{proof}
+
+\begin{definition}
+Let $X$ be a preordered set.
+
+\begin{itemize}
+    \item The element $\top$ is that for which $\downarrow \top = X$.
+    \item (\textbf{Heyting implication}) For $x, y \in X$, an element $x \supset y$ is that for which $\downarrow(x \supset y) = \{z \mid z \land x \leq y\}$ (intuitively, this follows the implication introduction rule).
+    \item The element $\bot$ is that for which $\uparrow \bot = X$.
+    \item For $x, y \in X$, an element $x \lor y$ is that for which $\uparrow(x \lor y) = (\uparrow x) \cap (\uparrow y)$ (intuitively, this follows a version of $\lor$-elimination with no context).
+\end{itemize}
+
+\end{definition}
+
+\begin{definition}
+A preordered set $X$ is a Heyting algebra provided that:
+\begin{itemize}
+    \item for all $x, y \in X$, there exists a meet $x \land y$
+    \item there exists a $\top \in X$
+    \item for all $x, y \in X$, there exists a Heyting implication $x \supset y$
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+A preordered set $X$ is a bi-Heyting algebra provided that it is a Heyting algebra and additionally satisfies:
+\begin{itemize}
+    \item for all $x, y \in X$, there exists a join $x \lor y$
+    \item there exists a $\bot \in X$
+\end{itemize}
+\end{definition}
+
+We can now begin to define the semantics of $\operatorname{IPLProp}(\mathcal{E}_0)$ in $X$. Let $\sigma: \mathcal{E}_0 \to X$ be an interpretation of the propositional variables. We can extend it to the map
+\begin{align*}
+\db{\cdot}: \operatorname{IPLProp}(\mathcal{E}_0) &\to X \\
+x &\mapsto \sigma(x) \\
+\cdot &\mapsto \top \\
+\top &\mapsto \top \\
+\bot &\mapsto \bot \\
+x \land y &\mapsto \db{x} \land \db{y} \\
+x \lor y &\mapsto \db{x} \lor \db{y} \\
+x \supset y &\mapsto \db{x} \supset \db{y}
+\end{align*}
+
+\begin{theorem}[Soundness]
+Let $X$ be a bi-Heyting algebra, and let $\Sigma_1$ be a set of axioms for an IPL. If for all $\Gamma \Rightarrow A \in \Sigma_1$, $\db{\Gamma} \leq \db{A}$, then for all provable $\Gamma \vdash A$, $\db{\Gamma} \leq \db{A}$. 
+\end{theorem}
+\begin{proof}
+Induction on the proof rules with casework (see the boolean semantics section for examples).
+
+The only non-trivial rule to prove is $\lor$-elimination, which is an exercise on homework 1.
+\end{proof}
+
+\begin{remark}
+The soundness theorem is part of why we choose to model the semantics of IPL in this way.
+\end{remark}
+
+We can now return to proving that DNE and LEM are not derivable/admissable. The proof strategy will be finding a bi-Heyting algebra for which we can apply the contrapositive of the Soundness Theorem to the results of DNE and LEM.
+
+\begin{definition}
+A Heyting algebra is \textbf{boolean} provided that the Soundness Theorem inequalities corresponding to DNE and LEM hold on all of its elements, in which case it is equivalent (?) to the boolean algebra. 
+\end{definition}
+
+\begin{remark}
+There exists a Heyting algebra that is not boolean:
+$\{0, 1, 2\}, \leq$, where $\land = \min$, $\lor = \max$, $\top = 2$, $\bot = 0$, $x \supset y = \begin{cases}2 & x \leq y \\ y & \text{otherwise}\end{cases}$.
+\end{remark}
+
+\begin{theorem}
+LEM is not provable/admissable/derivable.
+\end{theorem}
+
+\begin{proof}
+Let $A$ be a proposition, $X$ be the above non-boolean Heyting algebra, and $\sigma$ be an interpretation mapping $A \mapsto 1$.
+
+In particular, LEM does not hold for $A$: $1 \lor (1 \supset 0) = 1 \lor 0 = 1$. LEM would imply $2 \leq 1$, contradicting the Soundness Theorem.
+\end{proof}
+
+\begin{remark}
+Fun fact: the open subsets of a topological space almost always form a Heyting algebra and almost never form a boolean algebra.
+($\land = \cap$, $\lor = \cup$, $\top = \text{whole space}$, $\bot = \varnothing$, $X \supset Y = \operatorname{int}(X^c \cup Y)$). If you experiment on $\mathbb{R}$, where your LEM proposition maps to an open interval on $\mathbb{R}$, then you can see LEM doesn't hold because the open interval and its complement don't cover all of $\mathbb{R}$. 
+\end{remark}
+
+\end{document}
