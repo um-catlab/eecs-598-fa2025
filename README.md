@@ -14,7 +14,7 @@ you add your name to one of the open slots.
 | PS1         | Ivan Wei    |             |                            |
 | PS2         | Jesse Slater|             |                            |
 | PS3         |   Ayan C    |             |                            |
-| PS4         |             |             |                            |
+| PS4         | Chris Davis |             |                            |
 | PS5         |             |             |                            |
 | PS6         |             |             |                            |
 
@@ -35,7 +35,7 @@ Schedule:
 | Wed, Sep 03  |   Ayan C   |
 | Mon, Sep 08  |A Bandukwala|
 | Wed, Sep 10  |Jesse Slater|
-| Mon, Sep 15  |            |
+| Mon, Sep 15  |Chris Davis |
 | Wed, Sep 17  |            |
 | Mon, Sep 22  |            |
 | Wed, Sep 24  |            |
