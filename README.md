@@ -36,7 +36,7 @@ Schedule:
 | Mon, Sep 08  |A Bandukwala|
 | Wed, Sep 10  |Jesse Slater|
 | Mon, Sep 15  |Chris Davis |
-| Wed, Sep 17  |            |
+| Wed, Sep 17  |Yuchen Jiang|
 | Mon, Sep 22  |            |
 | Wed, Sep 24  |            |
 | Mon, Sep 29  |            |
