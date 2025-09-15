@@ -38,7 +38,7 @@ Schedule:
 | Mon, Sep 15  |Chris Davis |
 | Wed, Sep 17  |Yuchen Jiang|
 | Mon, Sep 22  | Yichen Tao |
-| Wed, Sep 24  |            |
+| Wed, Sep 24  | Eric Bond  |
 | Mon, Sep 29  |            |
 | Wed, Oct 01  |            |
 | Mon, Oct 06  |            |
