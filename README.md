@@ -37,7 +37,7 @@ Schedule:
 | Wed, Sep 10  |Jesse Slater|
 | Mon, Sep 15  |Chris Davis |
 | Wed, Sep 17  |Yuchen Jiang|
-| Mon, Sep 22  |            |
+| Mon, Sep 22  | Yichen Tao |
 | Wed, Sep 24  |            |
 | Mon, Sep 29  |            |
 | Wed, Oct 01  |            |
