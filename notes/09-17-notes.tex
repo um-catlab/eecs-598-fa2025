@@ -1,0 +1,512 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs,stmaryrd,mathrsfs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\twoheadrightarrowtail}{\mathrel{\ooalign{\hfil$\rightarrowtail$\hfil\cr\hfil$\twoheadrightarrow$\hfil}}}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\Set}{\mathrm{Set}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 7: Functors, Natural Transformations, Equivalence of Categories}
+\author{Lecturer: Max S. New\\ Scribe: Yuchen Jiang}
+\date{September 17, 2025}
+\maketitle
+
+
+Topics: isomorphisms, functors between categories and natural transformations.
+
+\section{Isomorphisms}
+
+Last time we talked about bijections. A function $f: X \to Y$ is a bijection if it's both injective and surjective; alternatively, it's bijective if it has a 2-sided inverse $f^{-1}: Y \to X$. We also showed that these definitions can be generalized to isomorphisms in an arbitrary category.
+
+\begin{definition}
+  Given a morphism $f: \cat{C}(X, Y)$, $f$ is an isomorphism if there exists a morphism $f^{-1}: \cat{C}(Y, X)$ such that $f f^{-1} = id_Y$ and $f^{-1} f = id_X$.
+\end{definition}
+
+\begin{remark}
+  In this course, we write $f g$ to denote $f \circ g$, meaning the composition of $f$ and $g$. Both notations can be used interchangeably, but omitting the $\circ$ is briefer.
+\end{remark}
+
+We can similarly generalize the notion of injectivity and surjectivity to morphisms in an arbitrary category.
+
+\subsection{Monomorphisms}
+
+The analog of injectivity in category theory is called a monomorphism.
+
+\begin{definition}
+  $f : \cat{C}(X, Y)$ is a monomorphism (``is mono'' or ``is monic'') if $\forall Z, \forall g, g' : \cat{C}(Z, X)$,
+  \begin{align*}
+    g = g'~\iff~f g = f g'
+  \end{align*}
+\end{definition}
+
+Conventionally monomorphic functions are written as $f : X \rightarrowtail Y$.
+We can comment on the definition that $f$ is left cancellative. Monomorphisms enjoy the following lemma:
+
+\begin{lemma}
+  $f: X \rightarrow Y \in \Set$ is mono $\iff$ $f$ is injective
+\end{lemma}\label{lemma:mono-iff-injective}
+
+% WTS: want to show
+% STS: suffices to show
+
+\begin{proof} Case split on $\iff$
+
+  Case $\implies$. Suppose $f$ is mono. Let $x, x' \in X$ s.t. $f x = f x'$, WTS $x = x'$. We can use the same trick from last time to construct \emph{constant functions} $K x: 1 \to X$ and $K x': 1 \to X$ s.t.
+
+  % https://q.uiver.app/#q=WzAsMyxbMCwwLCIxIl0sWzEsMCwiWCJdLFsyLDAsIlkiXSxbMCwxLCJLIHgiLDAseyJvZmZzZXQiOi0xfV0sWzAsMSwiSyB4JyIsMix7Im9mZnNldCI6MX1dLFsxLDIsImYiXV0=
+  \[\begin{tikzcd}
+    1 & X & Y
+    \arrow["{K x}", shift left, from=1-1, to=1-2]
+    \arrow["{K x'}"', shift right, from=1-1, to=1-2]
+    \arrow["f", from=1-2, to=1-3]
+  \end{tikzcd}\]
+
+  We can then compose both of them with $f$ to take advantage of the fact that $f$ is monic.
+  \begin{align*}
+    f \circ K x &= K (f x) \\
+    f \circ K x' &= K (f x') \\
+  \end{align*}
+
+  Since RHSs are equal, we conclude that $K x = K x'$, and thus $x = x'$.
+
+  Case $\impliedby$. Suppose $f$ is injective. Let $g, g' : Z \to X$ s.t. $f g = f g'$. Pick $z \in Z$. WTS $g z = g' z$. Then it suffices to show that \begin{align*}
+    f (g z) &= f (g' z) \\
+    (f g) z &= (f g') z
+  \end{align*}
+  , which is true since $f g = f g'$.
+\end{proof}
+
+\subsection{Epimorphisms}
+
+There're two choices of the analog of surjectivity in category theory. The first one is called an epimorphism, which is the dual of a monomorphism.\footnote{What's the second one?}
+
+\begin{definition}
+  $f: \cat{C}(X, Y)$ is an epimorphism (``is epi'' or ``is epic'') if $\forall Z. \forall g, g' : \cat{C}(Y, Z),$ $$g = g' \iff g f = g' f$$
+\end{definition}
+
+Conventionally epimorphic functions are written as $f : X \twoheadrightarrow Y$.
+A similar lemma to Lemma \ref{lemma:mono-iff-injective} holds for epimorphisms. The reason why it holds is that if $g f = g' f$ then $g = g'$ if applied to the image of $f$, which will only happen if the image of $f$ is the entire set.
+
+%%%% from 15:40
+
+Conventionally monomorphic functions are written as $f : X \rightarrowtail Y$, and epimorphic functions are written as $f : X \twoheadrightarrow Y$.
+
+%%%% end
+
+\subsection{Relations between Monomorphisms, Epimorphisms, and Isomorphisms}
+
+An interesting question rises from the definitions we've seen so far: since a function in $\Set$ is bijective if it's both injective and surjective, namely Inj + Surj $\cong$ Bijective, then does this hold in general? In other words, does Mono + Ephi $\cong$ Iso? Surprisingly, the answer is NO. An counter-example could be a monoid homomorphism
+$$
+i : \mathbb{N} \rightarrow \mathbb{Z} \in \text{Mon}
+$$
+where $i$ is both mono and epi, but not iso.
+
+\begin{remark}
+  Being isomorphic does imply monomorphic and epimorphic. Proved by multiplying inverse $f^{-1}$ of $f$ on both sides for both epi and mono.
+\end{remark}
+
+To fix this situation, we can strengthen the definition of either epimorphism and monomorphism. We can define a split epimorphism (a.k.a section).
+
+\begin{definition}
+  $f: \cat{C}(X, Y)$ is a split epimorphism if it has a \emph{section} $s: \cat{C}(Y, X)$ s.t. $$f s = id_Y$$
+\end{definition}
+
+Dually, we can define a split monomorphism (a.k.a retraction).
+
+\begin{definition}
+  $f: \cat{C}(X, Y)$ is a split monomorphism if it has a \emph{retraction} $r: \cat{C}(Y, X)$ s.t. $$r f = id_X$$
+\end{definition}
+
+Sections and retractions are defined in pairs, and we can say that section $s$ has a retraction $r$ and vice versa. The name ``retraction'' is easier to remember because it \emph{retracts} the result of $f$ to the identity function on $X$.
+
+Now we can claim that Mono + Split Epi $\cong$ Iso.
+
+\begin{theorem}
+  If a morphism $f$ is both a monomorphism and a split epimorphism, then it's an isomorphism.
+\end{theorem}
+\label{theorem:mono-split-epi-implies-iso}
+\begin{proof}
+  We start from $f$ being split epi, meaning $f \circ s = id$. To prove that $f$ is iso, we need to find its left inverse.
+  Therefore, WTS $s \circ f = id$. We can apply $f$ to both sides
+  \begin{align*}
+    f \circ (s \circ f) &= f \circ id \\
+    (f \circ s) \circ f &= f \circ id \\
+    id \circ f &= f \circ id \\
+    f &= f
+  \end{align*}
+  and we've proved that $s$ is the left inverse of $f$ that we're looking for.
+\end{proof}
+
+In fact, if we interpret Theorem \ref{theorem:mono-split-epi-implies-iso} in the category $\Set$, we can see that it's equivalent to the original formulation because of the following theorem.
+
+\begin{theorem}
+  In the category $\Set$, all epis are split epis. (Axiom of Choice)
+\end{theorem}
+
+But in the category $\Set$, not all injective functions have a retract; therefore, not all monos are split monos. A counter example is $\varnothing \rightarrowtail Y$. The following theorem concludes the discussion.
+
+\begin{theorem}
+  Not all injective functions have a retract.
+\end{theorem}
+
+\begin{remark}
+  One of the reasons why category theory is powerful is that 27:40.
+\end{remark}
+
+We can also prove that Split Mono + Epi $\cong$ Iso. The arguments are basically the same as the proof of Theorem \ref{theorem:mono-split-epi-implies-iso}, except that we need to reason about retraction instead of section. This is a good example of duality, a significant concept in category theory.
+
+We notice that the definition of mono and epi are dual to each other. Maybe we could have defined epimorphisms as monomorphisms in the \emph{opposite} category.
+
+\section{Opposite Category}
+
+\begin{definition}
+  Let $\cat{C}$ be a category. The opposite category of $\cat{C}$, denoted by $\cat{C}^{op}$, is the category with the same objects as $\cat{C}$ and the same morphisms as $\cat{C}$, but with the direction of the morphisms reversed.
+  \begin{itemize}
+    \item $\cat{C}^{op}_0 = \cat{C}_0$
+    \item $\cat{C}^{op}_1(X, Y) = \cat{C}_1(Y, X)$ s.t. \begin{align*}
+      id_X &: \cat{C}^{op}_1(X, X) = \cat{C}_1(X, X) \\
+      \text{and}~\forall f &: \cat{C}^{op}_1(X, Y), g : \cat{C}^{op}_1(Y, Z), \\
+      g \circ^{op} f &: \cat{C}^{op}_1(X, Z) := f \circ g
+    \end{align*}
+    where $f : \cat{C}_1(Y, X)$ and $g : \cat{C}_1(Z, Y)$, therefore $f \circ g$ is the correct direction.
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  We should define dual concepts in the opposite category whenever possible to not repeat ourselves and get some theorems for free. For example, epimorphism in $\cat{C}$ can be defined as monomorphism in $\cat{C}^{op}$. The benefit of defining concepts in opposite categories is that we can transform existing proofs into their duals, e.g. the proof of Theorem \ref{theorem:mono-split-epi-implies-iso} can be transformed into the proof of split monomorphism + epimorphism $\cong$ isomorphism. We'll further elaborate on the definition of epimorphism after we introduce functors.
+\end{remark}
+
+An important observation is that $op$ is an involution on categories, i.e. $(\cat{C}^{op})^{op} = \cat{C}$.
+
+\section{Functors}
+
+Functors are mappings between categories.
+
+\begin{definition}
+  A functor $F: \cat{C} \rightarrow \cat{D}$ is a function that maps objects and morphisms of $\cat{C}$ to objects and morphisms of $\cat{D}$ such that:
+  \begin{itemize}
+    \item $F_0 : \cat{C}_0 \rightarrow \cat{D}_0$
+    \item $F_1 : \forall X, Y \in \cat{C}_0, \cat{C}_1(X, Y) \rightarrow \cat{D}_1(F_0 X, F_0 Y)$ s.t.
+      \begin{align*}
+        F_1(id_\cat{C}^X) &= id_\cat{D}^{F_0(X)} \\
+        F_1(f \circ^{\cat{C}} g) &= F_1(f) \circ^{\cat{D}} F_1(g)
+      \end{align*}
+      These are homomorphism properties that functors must satisfy.
+  \end{itemize}
+\end{definition}
+
+A functor $F$ is a mapping that preserves the identity and composition of morphisms. For example, we can diagrammatically show that $F$ preserves the composition of morphisms:
+
+% https://q.uiver.app/#q=WzAsMyxbMCwxLCJYIl0sWzIsMCwiWSJdLFsyLDIsIloiXSxbMCwxLCJmIl0sWzEsMiwiZyJdLFswLDIsImgiLDJdXQ==
+% https://q.uiver.app/#q=WzAsMyxbMCwxLCJGWCJdLFsyLDAsIkZZIl0sWzIsMiwiRloiXSxbMCwxLCJGZiJdLFsxLDIsIkZnIl0sWzAsMiwiRmgiLDJdXQ==
+\[F\left(\begin{tikzcd}
+	&& Y \\
+	X \\
+	&& Z
+	\arrow["g", from=1-3, to=3-3]
+	\arrow["f", from=2-1, to=1-3]
+	\arrow["h"', from=2-1, to=3-3]
+\end{tikzcd}\right) \quad = \quad \begin{tikzcd}
+	&& FY \\
+	FX \\
+	&& FZ
+	\arrow["Fg", from=1-3, to=3-3]
+	\arrow["Ff", from=2-1, to=1-3]
+	\arrow["Fh"', from=2-1, to=3-3]
+\end{tikzcd}\]
+
+If $h = g \circ f$, then $F h = F g \circ F f$ in the diagram above.
+
+\subsection{Examples}
+
+\subsubsection*{Preorders}
+
+Given $P, Q$ preorders, $f: P \rightarrow Q$ monotone function, then
+$$F: \mathrm{PreCat}(P) \rightarrow \mathrm{PreCat}(Q)$$ is a functor equivalent to $f$ where $\mathrm{PreCat}$ turns preorders into categories. The order relation is preserved during the upgrade from $f$ to $F$, and all theorems in $\mathrm{PreCat}(P)$ can be lifted to $\mathrm{PreCat}(Q)$ by $F$.
+
+\subsubsection*{Monoids}
+
+Given $M, N$ monoids, $f: M \rightarrow N$ monoid homomorphism, then
+$$F: \mathrm{MonCat}(M) \rightarrow \mathrm{MonCat}(N)$$ is a functor where $\mathrm{MonCat}$ upgrades monoids into one-object categories where elements of $M$ are the morphisms, and the monoid operation is the composition of morphisms.
+
+\subsubsection*{Forgetful Functor}
+
+Given a category of preorders $\mathrm{Preorder}$, we can take its underlying set with $U: \mathrm{Preorder} \rightarrow \Set$ where
+\begin{itemize}
+  \item $U_0 P = |P|$
+  \item $U_1 f = f$ but we forget the fact that $f$ is monotone
+\end{itemize}
+
+$U$ is called a forgetful functor, where $U$ stands for ``underlying''. Similarly, we can write other forgetful functors that takes 
+monoids to sets $\mathrm{Mon} \to \Set$, finite set to set $\mathrm{FinSet} \to \Set$, set of injective functions to set $\mathrm{Inj} \to \Set$, graphs to set $\mathrm{Graph} \to \Set$, etc.
+
+\subsubsection*{Compiling STLC to Set}
+
+A functor from syntactic category of STLC to semantic category $\Set$ can be defined as $\mathrm{STLC} \overset{\sem{\,\cdot\,}}{\longrightarrow} \Set$.
+
+To recap, the objects are types $A$ and the morphisms are terms of one variable $x : A \to M : B$. To define the functor, we need to preserve identity and composition. Therefore, we define the functor $\sem{\,\cdot\,}$ as
+\begin{align*}
+  \text{identity: }& \sem{x : A \vdash x : A}(\tilde{x}) := \tilde{x} \\
+  \text{composition: }& \sem{M[N/x]} = \sem{M} \circ \sem{N}
+\end{align*}
+
+There is a different approach to define the category of STLC, which we discussed in the homework PS1, that is to define the notion of substitution $\gamma : \Delta \to \Gamma$ as a function that maps variables in $\Gamma$ to terms in $\Delta$. The functor $\sem{\,\cdot\,}$ is then defined as
+\begin{align*}
+  \text{identity: }& \sem{id_{\Gamma}} := id \\
+  \text{composition: }& \sem{\gamma \circ \delta} = \sem{\gamma} \circ \sem{\delta}
+\end{align*}
+
+We'll be discussing many different functors from STLC into other semantic categories when we touch on the topic of initiality for STLC in the future.
+
+\subsubsection*{List}
+
+An example from functional programming. Functor $\mathrm{List} : \Set \to \Set$ is defined as
+\begin{align*}
+  &\mathrm{List}(X) :=~\text{finite sets of}~X~\text{elements} \\
+  &\mathrm{List}(f)([x_1, \dots]) =~[f(x_1), \dots]
+\end{align*}
+s.t. the following properties hold:
+\begin{itemize}
+  \item $\mathrm{List}(id) = id$
+  \item $\mathrm{List}(f \circ g) = \mathrm{List}(f) \circ \mathrm{List}(g)$
+\end{itemize}
+
+
+\subsubsection*{Powerset and Contravariant Functor}
+
+The powerset operation on set $\pow: \Set \to \Set$ is a functor that takes a set to its powerset.
+\begin{align*}
+  &\pow_0(X) = \text{the powerset of } X \\
+  &\pow_1(f : X \to Y) : \pow(X) \to \pow(Y) \text{ s.t. } \\
+  &\pow_1(f)(S) = \{ y \in Y \mid \exists x \in S, f(x) = y \}
+\end{align*}
+
+Changing exists into forall in the last definition also gives us a functor.
+
+An interesting fact is that the same operation on objects can be made into a contravariant functor.
+$\pow: \Set^{op} \to \Set$ is a contravariant functor defined as
+\begin{align*}
+  &\pow_0(X) = \pow(X) \\
+  &\pow_1(f : Y \to X) : \pow(X) \to \pow(Y) \text{ s.t. } \\
+  &\pow_1(f)(S \subseteq X) = \{ y \mid f(y) \in S \} \text{ (preimage)}
+\end{align*}
+
+A contravariant functor is a functor that reverses the direction of the morphisms. The powerset operation defined above is a contravariant functor exactly because it's taking things out of an opposite category, which flips the arrows. To be clear, as long as the direction of morphisms is flipped, the functor is considered a contravariant functor; it doesn't matter whether it's taking things out of an opposite category or into one.
+
+%%%% 15:40
+
+\subsubsection*{Monomorphisms and Epimorphisms}
+
+Let's revisit monomorphisms and epimorphisms. Given a function $f: X \to Y$, if $f$ is mono, then we can write $f: X \rightarrowtail Y$; if $f$ is epi, then we can write $f: X \twoheadrightarrow Y$. Then what if we compose morphisms that have these properties?
+\begin{itemize}
+  \item $id: X \twoheadrightarrowtail Y$ because $id$ is mono and epi.
+  \item Given $f: X \rightarrowtail Y$ and $g: Y \rightarrowtail Z$, then $g \circ f: X \rightarrowtail Z$. We conclude that monos are closed under composition. Similarly, given $f: X \twoheadrightarrow Y$ and $g: Y \twoheadrightarrow Z$, then $g \circ f: X \twoheadrightarrow Z$.
+  \item Given $g: Y \rightarrowtail Z$ and $g \circ f$ is mono, then $f$ is mono, as shown in the last homework.
+\end{itemize}
+
+Monomorphisms and epimorphisms can be defined as functors as well.
+
+\begin{align*}
+  \mathrm{Mono}(\cat{C})_0 &:= \cat{C}_0 \\
+  \mathrm{Mono}(\cat{C})_1(X, Y) &:= \{ f \in \cat{C}_1(X, Y) \mid f~\text{mono} \} \\
+  \mathrm{Epi}(\cat{C}) &:= \mathrm{Mono}(\cat{C}^{op})^{op}
+\end{align*}
+
+Scriber remark: take a minute to justify the need of two opposite categories in the definition of $\mathrm{Epi}(\cat{C})$ and understand more about duality. The following diagrams might help.
+
+% https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXGJ1bGxldCJdLFsxLDAsIlxcYnVsbGV0Il0sWzIsMCwiXFxidWxsZXQiXSxbMCwxLCJnJyIsMix7Im9mZnNldCI6MX1dLFswLDEsImciLDAseyJvZmZzZXQiOi0xfV0sWzEsMiwiZiIsMCx7InN0eWxlIjp7InRhaWwiOnsibmFtZSI6Im1vbm8ifX19XV0=
+% https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXGJ1bGxldCJdLFsxLDAsIlxcYnVsbGV0Il0sWzIsMCwiXFxidWxsZXQiXSxbMSwwLCJnJyIsMCx7Im9mZnNldCI6LTF9XSxbMSwwLCJnIiwyLHsib2Zmc2V0IjoxfV0sWzIsMSwiZiIsMix7InN0eWxlIjp7ImhlYWQiOnsibmFtZSI6ImVwaSJ9fX1dXQ==
+\[\begin{tikzcd}
+	\bullet & \bullet & \bullet
+	\arrow["{g'}"', shift right, from=1-1, to=1-2]
+	\arrow["g", shift left, from=1-1, to=1-2]
+	\arrow["f", tail, from=1-2, to=1-3]
+\end{tikzcd} \qquad \begin{tikzcd}
+	\bullet & \bullet & \bullet
+	\arrow["{g'}", shift left, from=1-2, to=1-1]
+	\arrow["g"', shift right, from=1-2, to=1-1]
+	\arrow["f"', two heads, from=1-3, to=1-2]
+\end{tikzcd}\]
+
+%%%%
+
+\subsection{Category of Categories}
+
+The category of categories $\mathrm{CAT}$ is a category where the objects are categories and the morphisms are functors.
+\begin{align*}
+  \mathrm{CAT}_0 &:= \text{categories} \\
+  \mathrm{CAT}_1(\cat{C}, \cat{D}) &:= \text{functors } \cat{C} \to \cat{D} \\
+  id &: \cat{C} \to \cat{C} \\
+  G \circ F &: \cat{C} \to \cat{E} \text{ given } F: \cat{C} \to \cat{D} \text{ and } G: \cat{D} \to \cat{E} \\
+  (G \circ F)_0(X) &= G_0(F_0(X)) \\
+  (G \circ F)_1(f) &= G_1(F_1(f)) \\
+\end{align*}
+
+To show that $\mathrm{CAT}$ is a category, we need to show that it satisfies the properties of identity and composition, which is labor-intensive. We'll show some strategies to deal with this later this semester.
+
+\subsubsection*{Special Categories}
+
+We can define structures that look like simply-typed lambda calculus.
+
+We start with the \emph{terminal category} $\mathbf{1}$.
+\begin{align*}
+  \mathbf{1}_0 &:= \{ * \} \\
+  \mathbf{1}_1(*, *) &:= \{ id \}
+\end{align*}
+
+There's a nice property that the terminal category has:
+\[ \mathbf{1} \to \cat{C} \cong \cat{C}_0 \]
+
+The next is the empty category, which is also called the \emph{initial category} $\mathbf{0}$.
+\[ \mathbf{0}_0 := \varnothing \]
+
+Similarly, the empty category satisfies:
+\[ \mathbf{0} \to \cat{C} \cong \mathbf{1} \]
+
+Next is the \emph{product category}. Given $\cat{C}, \cat{D}$, the product category $\cat{C} \times \cat{D}$ is a category where the objects are pairs of objects from $\cat{C}$ and $\cat{D}$ and the morphisms are pairs of morphisms from $\cat{C}$ and $\cat{D}$.
+\begin{align*}
+  (\cat{C} \times \cat{D})_0 &= \cat{C}_0 \times \cat{D}_0 \\
+  (\cat{C} \times \cat{D})_1((X, Y), (A, B)) &= \cat{C}_1(X, Y) \times \cat{D}_1(A, B)
+\end{align*}
+
+The product category works in a way that $\cat{C}$ and $\cat{D}$ are ``independent'' of each other, and they don't interleave with each other. Written as a property:
+\[ \cat{E} \to \cat{C} \times \cat{D} \cong (\cat{E} \to \cat{C}) \text{ and } (\cat{E} \to \cat{D}) \]
+
+A less commonly used category is the \emph{disjoint union} of categories. Given $\cat{C}, \cat{D}$, the disjoint union category $\cat{C} \uplus \cat{D}$ is defined as
+\begin{align*}
+  (\cat{C} \uplus \cat{D})_0 &:= \cat{C}_0 \uplus \cat{D}_0 \\
+  (\cat{C} \uplus \cat{D})_1(X, Y) &:= \cat{C}_1(X, Y) \\
+  (\cat{C} \uplus \cat{D})_1(A, B) &:= \cat{D}_1(A, B) \\
+  (\cat{C} \uplus \cat{D})_1(X, B) &:= \varnothing \\
+  (\cat{C} \uplus \cat{D})_1(A, Y) &:= \varnothing
+\end{align*}
+
+And a similar property holds:
+\[ \cat{C} \uplus \cat{D} \to \cat{E} \cong (\cat{C} \to \cat{E}) \text{ and } (\cat{D} \to \cat{E}) \]
+
+Lastly, the most interesting case, the category of the function type $\cat{C} \Rightarrow \cat{D}$, also denoted as $\cat{D}^{\cat{C}}$.
+\begin{align*}
+  \cat{D}^{\cat{C}}_0 &:= \text{Functors from } \cat{C} \text{ to } \cat{D} \\
+  \cat{D}^{\cat{C}}_1(F, G) &:= \text{Natural transformations from } F \text{ to } G
+\end{align*}
+
+What is a \emph{natural transformation}? Let's start by looking at the properties that we want the morphisms of $\cat{D}^{\cat{C}}_1(F, G)$ to satisfy. In STLC, we want the functions to satisfy currying:
+\[ \cat{E} \to \cat{D}^{\cat{C}} \cong \cat{E} \times \cat{C} \to \cat{D} \]
+in which \( \cat{E} \times \cat{C} \to \cat{D} \) is called a \emph{bifunctor}. Now with this property in mind, we'll define what's a natural transformation.
+
+\section{Natural Transformations}
+
+The morphisms of $\cat{D}^{\cat{C}}_1(F, G)$ are the natural transformations $\alpha$ between functors $F$ and $G$.
+\begin{itemize}
+  \item $\forall X \in \cat{C}_0, \alpha_X \in \cat{D}(F X, G X)$
+  \item Natuality: $\forall f: \cat{C}_1(X, Y)$, the diagram (called the \emph{naturality square})
+    % https://q.uiver.app/#q=WzAsNCxbMCwwLCJGWCJdLFsyLDAsIkdYIl0sWzAsMiwiRlkiXSxbMiwyLCJHWSJdLFswLDIsIkZmIiwyXSxbMSwzLCJHZiJdLFswLDEsIlxcYWxwaGFfWCJdLFsyLDMsIlxcYWxwaGFfWSIsMl1d
+    \[\begin{tikzcd}
+      FX && GX \\
+      \\
+      \\
+      FY && GY
+      \arrow["{\alpha_X}", from=1-1, to=1-3]
+      \arrow["Ff"', from=1-1, to=4-1]
+      \arrow["Gf", from=1-3, to=4-3]
+      \arrow["{\alpha_Y}"', from=4-1, to=4-3]
+    \end{tikzcd}\]
+  commutes, regardless of the choice of $X$ and $f$.
+\end{itemize}
+
+There's a lot of different ways to think about the property of natural transformations (which is also known as the \emph{uniformity condition}). People with a programming language background might think of natural transformations as closely related to parametricity: type constructors have to behave uniformly across all instantiations, or rather, generic in the $\cat{C}_0$ component in that the structure doesn't depend on $f$ in any way. The other way to motivate it is that natural transformations are the morphisms in the category of functors, like what we did in the previous section.
+
+Historically, the category theory was first invented by Eilenberg and MacLane for the sole purpose of generalizing and formalizing the notion of natural transformations. The focus back then was instead natural isomorphisms.
+
+Finally, we'll define identity and composition of natural transformations. The identity natural transformation is defined as
+\begin{align*}
+  id &: F \Rightarrow F \\
+  id_X &: F X \to F X
+\end{align*}
+s.t. the following diagram commutes
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCJGWCJdLFsyLDAsIkZYIl0sWzAsMiwiRlkiXSxbMiwyLCJGWSJdLFswLDIsIkZmIiwyXSxbMSwzLCJHZiJdLFswLDEsImlkX1giXSxbMiwzLCJpZF9ZIiwyXV0=
+\[\begin{tikzcd}
+	FX && FX \\
+	\\
+  \\
+	FY && FY
+	\arrow["{id_X}", from=1-1, to=1-3]
+	\arrow["Ff"', from=1-1, to=4-1]
+	\arrow["Ff", from=1-3, to=4-3]
+	\arrow["{id_Y}"', from=4-1, to=4-3]
+\end{tikzcd}\]
+
+And the composition of natural transformations is defined as given $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$,
+\begin{align*}
+  \beta \circ \alpha &: F \Rightarrow H \\
+  (\beta \circ \alpha)_X &: F X \to H X
+\end{align*}
+s.t. the following diagram commutes
+% https://q.uiver.app/#q=WzAsNixbMCwwLCJGWCJdLFsxLDAsIkdYIl0sWzIsMCwiSFgiXSxbMCwyLCJGWSJdLFsxLDIsIkdZIl0sWzIsMiwiSFkiXSxbMCwzLCJGZiIsMl0sWzEsNCwiR2YiXSxbMiw1LCJIZiJdLFswLDEsIlxcYWxwaGFfWCJdLFsxLDIsIlxcYWxwaGFfWCJdLFszLDQsIlxcYWxwaGFfWSIsMl0sWzQsNSwiXFxhbHBoYV9ZIiwyXV0=
+\[\begin{tikzcd}
+	FX & GX & HX \\
+	\\
+	FY & GY & HY
+	\arrow["{\alpha_X}", from=1-1, to=1-2]
+	\arrow["Ff"', from=1-1, to=3-1]
+	\arrow["{\beta_X}", from=1-2, to=1-3]
+	\arrow["Gf", from=1-2, to=3-2]
+	\arrow["Hf", from=1-3, to=3-3]
+	\arrow["{\alpha_Y}"', from=3-1, to=3-2]
+	\arrow["{\beta_Y}"', from=3-2, to=3-3]
+\end{tikzcd}\]
+
+It's beneficial to unpack the underlying proofs that the diagram shows.
+
+\end{document}
