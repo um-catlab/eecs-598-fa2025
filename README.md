@@ -20,11 +20,12 @@ you add your name to one of the open slots.
 
 ## Scribed Notes Signup
 
-Sign up by submitting a pull request where you add your name. to the
+Sign up by submitting a pull request where you add your name to the
 date you want to volunteer. Then when you finish your notes submit
 them with the name `notes/MM-DD-notes.tex` where `MM` is replaced by
 the month (08, 09, 10, 11, 12) and `DD` is replaced by the day of the
-lecture. See the file `notes/MM-DD-notes.tex` for the template.
+lecture. See the file `notes/MM-DD-notes.tex` for the template. With the
+number of students this semester, everyone will need to scribe 3 lectures.
 
 Schedule:
 
@@ -39,7 +40,7 @@ Schedule:
 | Wed, Sep 17  |Yuchen Jiang|
 | Mon, Sep 22  | Yichen Tao |
 | Wed, Sep 24  | Eric Bond  |
-| Mon, Sep 29  |            |
+| Mon, Sep 29  | Max New    |
 | Wed, Oct 01  |Yuchen Jiang|
 | Mon, Oct 06  |            |
 | Wed, Oct 08  |            |
