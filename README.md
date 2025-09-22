@@ -45,7 +45,7 @@ Schedule:
 | Wed, Sep 24  | Eric Bond  |
 | Mon, Sep 29  | Max New    |
 | Wed, Oct 01  |Yuchen Jiang|
-| Mon, Oct 06  |            |
+| Mon, Oct 06  | Conner Rose |
 | Wed, Oct 08  |            |
 | Wed, Oct 15  |            |
 | Mon, Oct 20  |            |
