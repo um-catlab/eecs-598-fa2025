@@ -9,14 +9,17 @@ you add your name to one of the open slots.
 
 ## Problem Set Solution Signup
 
-| Problem Set | Presenter 1 | Presenter 2 | Presenter 3 (if necessary) |
-|:-----------:|-------------|-------------|----------------------------|
-| PS1         | Ivan Wei    |             |                            |
-| PS2         | Jesse Slater|             |                            |
-| PS3         |   Ayan C    |             |                            |
-| PS4         | Chris Davis |             |                            |
-| PS5         |             |             |                            |
-| PS6         |             |             |                            |
+Problem set solutions will be presented in the lecture period after the problem set is due.
+Everyone taking the class (including auditors) must present once.
+
+| Problem Set | Presenter 1 | Presenter 2 | 
+|:-----------:|-------------|-------------|
+| PS1         | Ivan Wei    |             |
+| PS2         | Jesse Slater|             |
+| PS3         |   Ayan C    |             |
+| PS4         | Chris Davis |             |
+| PS5         |             |             |
+| PS6         |             |             |
 
 ## Scribed Notes Signup
 
