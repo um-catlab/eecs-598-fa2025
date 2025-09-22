@@ -39,8 +39,8 @@ Schedule:
 | Wed, Sep 17  |Yuchen Jiang|
 | Mon, Sep 22  | Yichen Tao |
 | Wed, Sep 24  | Eric Bond  |
-| Mon, Sep 29  |Yuchen Jiang|
-| Wed, Oct 01  |            |
+| Mon, Sep 29  |            |
+| Wed, Oct 01  |Yuchen Jiang|
 | Mon, Oct 06  |            |
 | Wed, Oct 08  |            |
 | Wed, Oct 15  |            |
