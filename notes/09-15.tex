@@ -1,0 +1,221 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+\usepackage{mathpartir}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 6: Introduction to Categories}
+\author{Lecturer: Max S. New\\ Scribe: Christopher Davis}
+\date{September 15th, 2025}
+\maketitle
+
+
+
+\section{Discrete Preorder}
+
+\section{Categories}
+
+\begin{definition}[Category]
+A Category $C$ consists of:
+\begin{enumerate}
+    \item $C_0$, a set of ``objects''
+    \item $\forall x,y \in C_0$, the set $C_1(x,y)$ of morphisms/``arrows'', also called $\hom(C)$
+    \item $\forall x$, the identity $\text{\textup{id}}_x \in C_1(x,x)$
+    \item Composition: $\forall x,y,z \in C_0$,
+    \begin{mathpar}
+        \inferrule*[]{f \in C_1(x,y), \quad g \in C_1(y,z)}{g \circ f \in C_1(x,z)}
+    \end{mathpar}
+    \item With these rules: $g \circ \textup{id} = \textup{id} \circ g = g$; and $\;h \circ (g \circ f) = (h \circ g) \circ f$
+\end{enumerate}
+
+\end{definition}
+
+Objects can be thought of as generalizing the notion of a preorder, and morphisms the ordering relation. We will consider some examples.
+
+
+\subsection{Examples}
+
+\subsubsection{Preorders}
+Let $P$ be a preorder. Then, we can define $\textmd{Cat } P$ by
+
+\begin{itemize}
+    \item $(\textmd{Cat } P)_0 := P$
+    \item $(\textmd{Cat } P)_1(x,y) := \{ \ast : x \leq y \}$
+    \item $\textmd{id}_x := \ast$
+    \item $g \circ f := \ast$
+\end{itemize}
+
+Note that $\textmd{id}_x$ is well-formed, as $x \leq x$. The composition is likewise valid, since without loss of generality we can write $x \leq z$ for $g$, and $y \leq z$ for $f$, which by transitivity is $x \leq z$; i.e., $g \circ f$.
+
+\vspace{5mm}
+
+In general, we can say that a category ``looks like'' a preorder when all morphisms between the same two objects are equal. So, when we have a preorder, we can construct a category where every hom. set has at most one element. This introduces this concept:
+
+\begin{definition}[Thin Category]
+    A category $C$ is \textbf{thin} provided that
+    $$\forall x,y \in C_0, \quad f,g \in C_1(x,y) \Rightarrow f = g$$
+    I.e., every $C_1(x,y)$ has at most one morphism.
+\end{definition}
+
+Hence, every peorder induces a thin category, and every thin category is ``equivalent'' as a category to a preorder.
+
+\subsubsection{Sets and Functions}
+We can also define a category for sets and functions; call it $\textmd{set}$.
+
+We can then define $\textmd{set}_0 := \{$ ``set'' of all sets $\}$. Of course, the exact rigorous definition of $\textmd{set}_0$ here is more complicated, depending on set theory and $ZF(C)$; in this case, it could be the (proper) class of all sets, but this is outside the scope of this lecture. The point is that it is a collection of arbitrary sets.
+
+Then, we can say $\textmd{set}(X,Y) := Y^X$; that is, the morphisms are the functions from $X$ to $Y$. Consequently, $\textmd{id}_X := (x \mapsto x) \in X^X$ and $(g \circ f)(x) := g(f(x))$. The identity and associativity rules then follow.
+
+\subsubsection{STLC}
+
+We can define the objects as $\textmd{STLC}(\epsilon)_0 :=$ types $A$. Then, the morphisms can be $\textmd{STLC}(\epsilon)_1(A,B) := \{M | x:A \vdash M :B \}$; i.e., a term with a single free variable. Then, we have $M \circ N := M[N/X]$, and $x:A \vdash x:A$. Note $M[x/x] = M$, $x[M/x] = M$, and $M[N/x][P/x] = M\left[\frac{N[P/x]}{x}\right]$, which satisfies the category constraints.
+
+
+Alternatively, we can define the morphisms as $\cdot \vdash M: A \Rightarrow B$. I.e., a closed term of function type. Then, $M \circ N := \lambda x . M(N_x)$ and $\textmd{id}_x := \lambda x . x\;.$ Even more generally, we could have the morphisms as $\Gamma \vdash M : A \Rightarrow B$
+
+\subsubsection{Graphs}
+We can define the objects (vertices) as a set, $G_0$, with a relation $G_1 \subseteq G_0 \times G_0$. The morphisms would then be graph homomorphisms, $\textmd{Graph}(G,H)$. These are functions on the underlying sets $f:G_0 \rightarrow H_0$ that preserves the graph incidence relation $G_1$. I.e., $(x,\;y) \in G_1 \Rightarrow (fx,\;fy) \in H_1$.
+
+\subsubsection{Quivers}
+A quiver would have an underlying set of vertices, $Q_0$, and, $\forall x,y \in Q_0$, there is a set $Q_1(x,y)$. Then, quiver homomorphisms, $f \in \textmd{Quiver}(Q,R)$, are such that there is a function of the quiver's vertices, $f: Q_0 \rightarrow R_0$ that preserves the edges. In particular, $e \in Q_1(x,y) \Rightarrow f_0e \in Q_1(f_0x,\;f_0y)$.
+
+Graphs are effectively preorders without reflexitivity or transitivity. This generalizes to quivers, which are categories without composition or identity.
+
+\subsubsection{Sets and (Injective) Functions}
+Above are examples of categories where we've equipped the sets with extra structure and likewise provide additional structure in the morphisms. Now, what about no extra structure, but more properties are imposed instead?
+
+Again, let the objects be sets. Define the morphisms as the injective functions $\textmd{Inj}(X,Y) = \{f: X \rightarrow Y : fx = fx' \Rightarrow x = x'\}$. It just needs to be shown that injective functions are closed under composition, and that the identity is injective.
+
+\subsubsection{(Finite) Sets}
+On the other hand, one may add extra structure, but not change any of the morphisms.
+
+Consider the category with finite sets as objects, a sub``set'' of all sets. Keep the morphisms as all functions $X^Y$, just as in Example 2.12.
+
+\subsection{Subcategories}
+
+Notice the similarity between the category examples, and how 2.1.6/7 are restricted versions of the original 2.1.2. We can consider them to be subcategories.
+
+\begin{definition}[Subcategory]
+    A \textbf{subcategory} of a category, $C$, is a category, $S$, whose objects are a subset of $C$'s objects, and whose morphisms are a subset of $C$'s morphisms. I.e., $S_0 \subseteq C_0, \; S_1 \subseteq C_1$.
+\end{definition}
+
+\begin{definition}[Wide Subcategory]
+    A subcategory $S$ of a category $C$ is \textbf{wide} provided that its objects are the same, meaning $S_0 = C_0$.
+\end{definition}
+
+\begin{definition}[Full Subcategory]
+    A subcategory $S$ of a categort $C$ is \textbf{full} provided that its morphisms are the same, meaning $S_1 = C_1$.
+\end{definition}
+
+Note that Example 2.1.6 is a wide subcategory (only morphisms restricted), and 2.1.7 is a full subcategory (only objects restricted).
+
+
+\subsection{More Examples}
+
+\subsubsection{Sets and Relations}
+Again let the objects be sets. Let the morphisms be the relations over sets, giving $\textmd{Rel}(X,Y) := \mathcal{P}(X \times Y)$. Note that, due to the looser morphisms, this is not a subcategory of sets and functions.
+
+Fix relations $R \subseteq X \times Y$ and $S \subseteq Y \times Z$. Then, we can define $R \circ S \subseteq X \times Z$ as $(R \circ S) = \{(x,z): \exists y \in Y, \; R(x,y) \land S(y,z)\}$. Now, we can say $\textmd{id}_X \subset X \times X$ is $\textmd{id}_X = \{(x,x):x \in X\}$, the diagonal relation. It is then straightforward to prove that this composure is associative, and the $\textmd{id}_X$ is left and right identity, thus proving this is a valid category.
+
+\begin{remark}
+    This is the (``very baby'') Co Yoneda Lemma.
+\end{remark}
+
+\subsubsection{Monoid}
+\begin{definition}[Monoid]
+    A monoid is an underlying set, $M_0$, as well as a unit element $e \in M_0$. It is equipped with a binary multiplication operator, $\cdot: M_0 \times M_0 \rightarrow M_0$, where $e\cdot m = m \cdot e = m$. This operator is also associative, with $a \cdot (b \cdot c) = (a \cdot b) \cdot c$.
+\end{definition}
+
+Let the objects be the underlying set $M_0$. The morphisms are then the monoid homomorphisms, $\hom(M, N)$. Fix $\varphi \in \hom(M,N)$. Then, $\varphi:M_0 \rightarrow N_0$, $\; \varphi(e_M) = e_N$, and $\varphi(m \cdot m') = \varphi(m) \cdot \varphi(m')$. I.e., it preserves the identity and composition.
+
+\vspace{5mm}
+
+Note the similarity between the definitions of monoids and categories. In fact, we can upgrade any monoid to a category. For a monoid $M$, we can construct the ``de-looping'' of $M$, $\;\mathcal{B}M$. This is a category whose objects are trivial, meaning $(\mathcal{B}M)_0 := \{ \ast\}$. For the morphisms, $\mathcal{B}M(\ast, \ast) = M_0$, the underlying set. Consequently, the identity $\textmd{id}_\ast = e_M$, the identity of the monoid. Now, the monoid's associativity and identity laws are exactly what we need for this to be a category.
+
+\vspace{5mm}
+
+This is a one-object category. As opposed to preorder categories, which had limited morphisms and non-limited sets, the monoid category is the opposite. It has only one object, but no limits on morphisms.
+
+\section{Algebraic Aspect of Categories}
+\subsection{Sets and Functions}
+Consider a bijection of sets. We say $f: X \rightarrow Y$ if either:
+\begin{itemize}
+    \item $f$ is injective and $f$ is surjective.
+    \item $\exists f^{-1}: Y \rightarrow X$ s.t. $\forall y \in Y, \; f(f^{-1}(y)) = y$ and $\forall x \in X, \; f^{-1}(f(x)) = x$.
+\end{itemize}
+    
+\begin{definition}[Isomorphism]
+    For a category $C$, a morphism $f \in C(X,Y)$ is an isomorphism if $\exists f^{-1} \in C(Y,X)$, where $f^{-1} \circ f = \textmd{id}_Y, \; f\circ f^{-1} = \textmd{id}_X$.
+\end{definition}
+
+\begin{lemma}[Inverses are unique]
+    \begin{proof}
+        Suppose we have $f$ and $f^{-1},(f^{-1})'$ that satisfy the above. Since this is a category, we have the unit laws, so $f^{-1} =f^{-1} \circ \textmd{id} =f^{-1} \circ (f \circ (f^{-1})') = (f^{-1} \circ f) \circ (f^{-1})' = \textmd{id} \circ (f^{-1})' = (f^{-1})'$
+    \end{proof}
+\end{lemma}
+
+\subsection{Generalizations}
+
+How can we generalize elements into categories? E.g., object $X$ doesn't necessarily have elements/``points.''
+
+\begin{remark}
+    An element, $x$, of a set $X$ is equivalent to a function $\{\ast\} \rightarrow X$ s.t. $\ast \mapsto x \in X$
+\end{remark}
+
+For example, we can think of $\{\ast\}$ is the space representing a shape (circle, etc.), and we can then embed it into a more general space $X$. So, there is no concept of ``point'' for an arbitrary object in a category, but can get morphisms into the object. I.e., an ``$X$-shaped point in $Y$'' is some morphisms $f \in C(X,Y)$. We can consider these morphisms as \textbf{generalized elements}.
+
+\vspace{5mm}
+
+So, now we can ask what it would mean for $f$ to be ``injective'' on these generalized elements.
+
+\vspace{5mm}
+
+Fix $f \in C(X,Y)$. Consider $x:W \rightarrow X$ and $x':W \rightarrow X$, with $f:X\rightarrow Y$. Now, we can say: if $f \circ x = f \circ x'$, then $x = x'$. In this case, we call $f$ a \textbf{monomorphism} (or mono, monic).
+
+\end{document}
