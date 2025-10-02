@@ -48,7 +48,7 @@ Schedule:
 | Mon, Oct 06  | Conner Rose |
 | Wed, Oct 08  |            |
 | Wed, Oct 15  |            |
-| Mon, Oct 20  |            |
+| Mon, Oct 20  | Yichen Tao |
 | Wed, Oct 22  |A Bandukwala|
 | Mon, Oct 27  |            |
 | Wed, Oct 29  |            |
