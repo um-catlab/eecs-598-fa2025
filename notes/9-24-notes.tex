@@ -1,0 +1,438 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+
+\usepackage{bussproofs}
+
+\usetikzlibrary{arrows.meta}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{nonexample}{Non-Example}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\initial}{\mathord{\text{\rotatebox[origin=c]{180}{!}}}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\purple}[1]{\textcolor{violet}{#1}}
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 9: Universal Properties}
+\author{Lecturer:  Max S. New\\ Scribe: Eric Bond}
+\date{September 24, 2025}
+\maketitle
+
+In this lecture, we cover many constructions in category theory which can be used to interpret the types of our simply typed lambda calculus. 
+\section{Terminal Object}
+\begin{definition}
+Let $C$ be a category. An object $X \in C$ is terminal when for any object $Y\in C$ there exists a unique morphism $! \in C(Y,X)$.
+\end{definition}
+
+Unique existence here can be thought of in two ways. 
+\begin{enumerate}
+    \item Any other morphism $f \in C(Y,X)$ must be equal to $!$
+    \item Any two morphisms $f,g \in C(Y,X)$ must be equal 
+\end{enumerate}
+
+\begin{example}Let $P$ be a preorder considered as a thin category. An element $X\in P$ is terminal iff $X$ is a top element.
+\end{example}
+
+\begin{example} In the category of sets and functions, any one element set is a terminal object.
+\end{example}
+\begin{example} In the category of monoids, any one element monoid is a terminal object.
+\end{example}
+
+\begin{example} In STLC modeled as type and terms, the unit type is a terminal object. Note that the uniqueness is given by the $\eta$ rule saying $x : 1 \vdash x = () : 1$. 
+\end{example}
+
+\begin{example} In STLC modeled as contexts and substitutions, the empty context is a terminal object.
+\end{example}
+
+In some sense, $\{*\}$,$\{\textrm{err}\}$ and $\{\emptyset\}$ are all \textit{equivalent} as terminal objects. Clearly, they are not equivalent at the level of sets because we can tell they are different sets. However, all of these sets are in bijection with each other in at most one way.
+
+\begin{theorem}
+    Terminal objects are unique up to unique isomorphism.
+\end{theorem}
+\begin{proof}
+    Let 1 and 1' be terminal objects in a category $C$. First, we must exhibit an isomorphism between 1 and 1'. Since 1' is terminal, we have a unique map $!_{1'} \in C(1,1')$. Likewise, since 1 is terminal, we have a unique map $!_1 \in C(1',1)$. In order for these maps to be an isomorphism, we must have $!_1 \circ !_{1'} = id_1$ and $!_{1'} \circ !_{1} = id_{1'}$. These conditions hold by uniquness. Observe that since 1 is terminal, for any $f \in C(1,1)$ it must be the case that $f = id_1$ and similarly for 1'.
+
+    It remains to be shown that this isomorphism is unique. Consider some other isomorphism $f : 1 \to 1'$. Since 1 and 1' are terminal, it must be the case that $f = !_{1'} \in C(1,1')$ and $f^{-1} = !_1 \in C(1',1)$.
+    
+\end{proof}
+
+\begin{remark}
+    Here we have a new proof strategy: If two things have the same universal property, then they are isomorphic.
+\end{remark}
+\section{Initial Object}
+By duality, we have the notion of an initial object.
+\begin{definition}
+    Let $C$ be a category. An object $X \in C$ is initial when for any object $Y\in C$ there exists a unique morphism $\initial \in C(X,Y)$.
+    \end{definition}
+
+\begin{remark}
+    We could also say that $X$ is initial in $C$ $\iff$ $X$ is terminal in $C^{op}$.
+\end{remark}
+
+\begin{example}
+    Let $P$ be a preorder considered as a thin category. An element $X \in P$ is initial iff $X$ is a bottom element.
+\end{example}
+
+\begin{example}
+    In the category of sets and functions, the empty set is an initial object.
+\end{example}
+
+\begin{example}
+    In STLC modeled as types and terms, the empty type is an initial object. $x : 0 \vdash \textrm{case}\; x\{\} : A$. Uniqueness is again given by the $\eta$ principle.
+\end{example}
+
+\begin{example}
+    In the category of monoids, any one element monoid is initial.
+\end{example}
+
+
+    Note that the initial element and terminal element in the category of Sets are different but in the category of monoids, they conincide. We can use this fact to demonstrate that arbitrary functors do no preserve initial/terminal objects. Consider the forgetful functor $U : \textrm{Mon} \to \textrm{Set}$. The one element monoid $\{e\}$ is initial in Mon, but the underlying set $\{e\}$ is not initial in Set. Later we will see that equivalences of categories do preserve universal properties.
+
+    \begin{theorem}
+        Initial objects are unique up to unique isomorphism.
+    \end{theorem}
+    \begin{proof}
+        By duality.
+    \end{proof}
+
+\section{Products}
+Being initial or terminal was a property of an object. The universal property of being a product involves more data.
+
+\begin{definition}
+    Let $A,B \in C$. A product conists of 
+    \begin{enumerate}
+        \item $\textcolor{blue}{P \in C}$
+        \item $\textcolor{blue}{\pi_1 : C(P,A)}$ and $\textcolor{blue}{\pi_2 : C(P,B)}$
+        \item s.t. \\$\textcolor{red}{\forall Z,f_1:C(Z,A),f_2:C(Z,B).\;}$\\
+        $\text{\quad}\ \purple{\exists!(f_1,f_2):C(Z,P).}$\\
+        $\text{\quad\quad}\purple{\pi_1 \circ (f_1,f_2)=f_1 \land \pi_2 \circ (f_1,f_2) = f_2}$
+    \end{enumerate}
+\end{definition}
+or diagramatically.. 
+
+\tikzset{
+  node/.style={inner sep=2pt},
+  rednode/.style={inner sep=2pt,red},
+  bluenode/.style={inner sep=2pt,blue},
+  arrow/.style={-{Latex[length=3mm]}, thick},
+  redarrow/.style={-{Latex[length=3mm]}, thick, red},
+  bluearrow/.style={-{Latex[length=3mm]}, thick, blue},
+  purplearrow/.style={-{Latex[length=3mm]}, thick, violet},
+}
+
+\begin{figure}[!h]
+    \centering
+
+\begin{tikzpicture}[node distance=2.5cm and 2cm]
+
+    \node[bluenode] (P) at (0,2) {$P$};
+    \node[bluenode] (A) at (-2,0) {$A$};
+    \node[bluenode] (B) at (2,0) {$B$};
+    \node[rednode] (Z) at (0,-2) {$Z$};
+    
+    % blue arrows
+    \draw[bluearrow] (P) -- (A) node[midway, above left] {$\pi_1$};
+    \draw[bluearrow] (P) -- (B) node[midway, above right] {$\pi_2$};
+    
+    % red arrows
+    \draw[redarrow] (Z) -- (A) node[midway, below left] {$f_1$};
+    \draw[redarrow] (Z) -- (B) node[midway, below right] {$f_2$};
+    
+    % dotted arrow
+    \draw[dotted, purplearrow] (Z) -- (P) node[midway, right] {$(f_1,f_2)$};
+    
+    \end{tikzpicture}
+\end{figure}
+The data of the product are colored \blue{blue}. \red{Red} is used to indicate any other choice of object with projection maps into $A,B$. We can think of $P$ as being the best possible choice of object with projection maps if any other object $Z$ with projection maps factor through $P$. The \purple{uniqueness} here is not just a unique morphism from $Z$ to $P$, but a unique morphism from $Z$ to $P$ which makes the diagram commute.
+
+\begin{example}
+    For a preorder $P$, the product of $A$ and $B$ is a meet $A \land B$.
+\end{example}
+
+\begin{example}
+    In the category of sets and functions, the product object of $A$ and $B$ is the cartesian product $A \times B$.
+\end{example}
+
+\begin{example}
+    In the category of monoids, the product of $M$ and $N$ may be defined on the product of their underlying sets $UM$, $UN$.
+\end{example}
+
+\begin{example}
+    In STLC modeled as types and terms, the product of $A$ and $B$ is given by the product type $A\times B$. The product type $A\times B$ has projection maps $\pi_1 : A \times B \to A$, $\pi_2 : A \times B \to B$. The $\times$ introduction rules is the existence condition. 
+    \begin{prooftree}
+        \AxiomC{$x : Z \vdash M : A$}
+        \AxiomC{$x : Z \vdash N : B$}
+        \BinaryInfC{$x : Z \vdash (M,N) : A \times B$}
+    \end{prooftree}
+    The $\beta$ laws, $\pi_1(M,N) = M$ and $\pi_2(M,N) = N$, express that the triangles commute. The uniqnuess is given by the $\eta$ principle $p : A \times B \vdash p = (\pi_1 p,\pi_2 p)$
+\end{example}
+
+\begin{example}
+    In STLC modeled as contexts and substitutions, the product of $\Gamma,\Delta$ is given by concatenation.
+\end{example}
+
+
+\begin{theorem}
+    Products are unique up to unique product preserving isomorphism.
+\end{theorem}
+\begin{proof}
+    Let $A \xleftarrow{\pi_1} P \xrightarrow{\pi_2} B$ and $A \xleftarrow{\pi_1'} Q \xrightarrow{\pi_2'} B$ be products of objects $A,B$. First, we must exhibit a product preserving isomorphism between $P,Q$. Since $Q$ is a product, there exists a map $(\pi_1,\pi_2):C(P,Q)$ and, similarly for $P$, there exists a map $(\pi_1',\pi_2'):C(Q,P)$. Let us consider the requirement $(\pi_1',\pi_2')\circ(\pi_1,\pi_2) = id_P$. Here we need to use the uniqueness property for $P$. We have that $\forall g,g' : C(Z,P).$ if $\pi_1 g = \pi_1 g'$ and $\pi_2 g = \pi_2 g'$ then $g = g'$. Then it s.t.s $\pi_1 \circ (\pi_1',\pi_2')\circ(\pi_1,\pi_2) = \pi_1 \circ id_P$ and $\pi_2 \circ (\pi_1',\pi_2')\circ(\pi_1,\pi_2) = \pi_2 \circ id_P$. Consider just the first case. Note that $\pi_1 \circ (\pi_1',\pi_2') = \pi_1'$ and $\pi_1' \circ(\pi_1,\pi_2)=\pi_1$ by the commuting conditions of our unique maps. Thus, we have an isomorphism between $P$ and $Q$. The uniqueness of the isomorphism follows from the uniqueness property of the products.
+\end{proof}
+
+\section{Coproducts}
+By duality, we have coproducts from products. Instead of an object with projections, we have an object with injections. Instead of a unique map into the product, we have a unique map out of the coproduct.
+
+\begin{definition}
+    Let $A,B \in C$. A coproduct conists of 
+    \begin{enumerate}
+        \item $\textcolor{blue}{S \in C}$
+        \item $\textcolor{blue}{\sigma_1 : C(A,S)}$ and $\textcolor{blue}{\sigma_2 : C(B,S)}$
+        \item s.t. \\$\textcolor{red}{\forall Z,f_1:C(A,Z),f_2:C(B,Z).\;}$\\
+        $\text{\quad}\ \purple{\exists![f_1,f_2]:C(S,Z).}$\\
+        $\text{\quad\quad}\purple{[f_1,f_2] \circ \sigma_1=f_1 \land [f_1,f_2] \circ \sigma_2 = f_2}$
+    \end{enumerate}
+\end{definition}
+\begin{figure}[!h]
+    \centering
+
+\begin{tikzpicture}[node distance=2.5cm and 2cm]
+
+    \node[bluenode] (S) at (0,2) {$S$};
+    \node[bluenode] (A) at (-2,0) {$A$};
+    \node[bluenode] (B) at (2,0) {$B$};
+    \node[rednode] (Z) at (0,-2) {$Z$};
+    
+    % blue arrows
+    \draw[bluearrow] (A) -- (S) node[midway, above left] {$\sigma_1$};
+    \draw[bluearrow] (B) -- (S) node[midway, above right] {$\sigma_2$};
+    
+    % red arrows
+    \draw[redarrow] (A) -- (Z) node[midway, below left] {$f_1$};
+    \draw[redarrow] (B) -- (Z) node[midway, below right] {$f_2$};
+    
+    % dotted arrow
+    \draw[dotted, purplearrow] (S) -- (Z) node[midway, right] {$[f_1,f_2]$};
+    
+    \end{tikzpicture}
+\end{figure}
+\begin{example}
+    For a preorder $P$, the coproduct of $A$ and $B$ is a join $A \lor B$.
+\end{example}
+
+\begin{example}
+    In the category of sets and functions, the coproduct object of $A$ and $B$ is the disjoint union $A \uplus B$.
+\end{example}
+
+\begin{example}
+    In the category of monoids, the coproduct of $M$ and $N$ is \textbf{not} defined on the coproduct of their underlying sets $UM$, $UN$. This is another instance where a universal property is not preserved by the forgetful functor. The coproduct of monoids is trickier to describe and is easiest to present as a free construction. (Details @ 1:10:00)
+\end{example}
+
+\begin{theorem}
+    Coproducts are unique up to unique coproduct preserving isomorphism.
+\end{theorem}
+\begin{proof}
+    By duality.
+\end{proof}
+
+\section{Exponentials}
+The exponential object is used to interpret the function types of our lambda calculus. Unlike the other definitions of universal properties, this one cannot be done in an arbitrary category.
+
+\begin{definition}
+    Let $A,B \in C$ and also $\forall Z \in C$ we have a product $Z \xleftarrow{\pi_1} Z \times A \xrightarrow{\pi_2} A$. An exponential consists of
+    \begin{enumerate}
+        \item $\textcolor{blue}{E \in C}$
+        \item $\textcolor{blue}{\app : C(E\times A , B)}$
+        \item s.t. \\$\textcolor{red}{\forall Z,f:C(Z\times A,B).\;}$\\
+        $\text{\quad}\ \purple{\exists!\lambda f:C(Z,E).}$\\
+        $\text{\quad\quad}\purple{\app \circ(\lambda f \circ \pi_1, \pi_2)= f}$
+    \end{enumerate}
+\end{definition}
+
+\begin{figure}[!h]
+    \centering
+
+\begin{tikzpicture}[node distance=2.5cm and 2cm]
+    \node[bluenode] (EA) at (0,2) {$E \times A$};
+    \node[bluenode] (B)  at (3,2) {$B$};
+    \node[rednode] (ZA) at (0,0) {$Z \times A$};
+    
+    % arrows
+    \draw[bluearrow] (EA) -- (B) node[midway, above] {$\app$};
+    \draw[dotted,purplearrow] (ZA) -- (EA) node[midway, left] {$(\lambda f \circ \pi_1,\pi_2)$};
+    \draw[redarrow]  (ZA) -- (B)  node[midway, below ] {$f$};
+    
+    
+    \end{tikzpicture}
+\end{figure}
+
+\begin{remark}
+    To demonstrate uniqueness we can either say: 
+    \begin{enumerate}
+        \item For any other $g: C(Z,E)$ satisfying $\app \circ (g \circ \pi_1, \pi_2) = f$ then $g = \lambda f$
+        \item For any two $g,g' : C(Z,E)$ such that $\app \circ (g \circ \pi_1,\pi_2) = \app \circ (g' \circ \pi_1, \pi_2)$ then $g = g'$
+    \end{enumerate}
+\end{remark}
+
+\begin{example}
+    In the category of sets and functions, the exponential object of $A$ and $B$ is the set of all functions from $A$ to $B$ denoted $B^A$. Let's consider this in detail. We need a function $\app : B^A \times A \to B$ which we can define as $\app(f,a):= f(a)$, a.k.a. function applicaiton. Then we need to show that..
+\begin{prooftree}
+    \AxiomC{$Z \times A \xrightarrow{f} B $}
+    \UnaryInfC{$Z \xrightarrow{\lambda f} B^A$}
+\end{prooftree}
+given any function $f : Z \times A \to B$ we can construct a $\lambda f : Z \to B^A$. This is just currying $(\lambda f)(z)(a) := f(z,a)$. \\
+Then we must ask if this definition makes the diagram commute. That is to say $\app \circ (\lambda f \circ \pi_1, \pi_2) = f$. Consider what happens pointwise. We have that $(\lambda f \circ \pi_1,\pi_2)(z,a)= (\lambda x . f(z,a),a)$ and $\app(\lambda x. f(z,a),a)= f(z,a)$. Therefore, the diagram does commute.\\
+Finally, we have to show uniqueness. Assume we have $g,g' : Z \to B^A$. If $\app \circ (g \circ \pi_1, \pi_2) = \app \circ (g' \circ \pi_1, \pi_2)$ then $g = g'$. Consider what happens pointwise on the l.h.s. We have $\app((g\circ \pi_1,\pi_2)(z,a))=\app(\lambda x. g(z,x),a)=g(z,a)$. Thus, we have $\forall z,a.\; g(z,a)=g'(z,a) \implies g = g'$ which is just function extensionality.
+\end{example}
+
+\begin{example}
+    Similar to the example in set, the function type, $A \Rightarrow B$, is the exponential object for types $A,B$. 
+    \[
+        app := x : (A \Rightarrow B)\times A \vdash (\pi_1 x)(\pi_2 x) : B
+        \]
+    \begin{prooftree}
+        \AxiomC{$y : Z \times A \vdash M : B$}
+        \UnaryInfC{$x : Z \vdash \lambda a . M[(x,a)/y] : A \Rightarrow B$}
+    \end{prooftree}
+\end{example}
+    \begin{remark}
+        
+Observe that we could instead have
+\[
+    f : A \Rightarrow B, x : A \vdash f a : B
+\]
+and
+\begin{prooftree}
+    \AxiomC{$\Gamma, x : A \vdash M : B$}
+    \UnaryInfC{$\Gamma \vdash \lambda x. M : A \Rightarrow B$}
+\end{prooftree}
+The concept of an exponential object has, as a dependency, the concept of a product object. In lambda calculus, we can talk about function types without reference to product types.
+\end{remark}
+
+\begin{nonexample}
+    The category of monoids does not have an exponential object.
+
+\end{nonexample}
+
+\begin{example}
+    The exponential object in the category of quivers for object $G,H$ is:
+    \begin{enumerate}
+        \item $(H^G)_v := H_v^{G_v}$  functions from the verticies of $G$ to the verticies of $H$.
+        \item $(H^G)_e(f,g):= \prod_{v \in G}H_e(fv,gv)$ which looks like the components of a natural transformation.
+    \end{enumerate}
+\end{example}
+
+
+\begin{theorem}
+    Exponentials are unique up to unique isomorphism.
+\end{theorem}
+
+\begin{proof}
+    Left as an exercise to the viewer :). Alternatively, use the result of lecture 11.
+\end{proof}
+
+\section{Constructing Morphisms using Universal Properties}
+For any object with a universal property in $C$, we know we always have a way to construct a morphism \textbf{into} that object. 
+\begin{example}
+    Every morphism into a terminal object looks like $!$.
+    In lambda syntax, this corresponds to the $\eta$ law, $M = ()$, for the unit type.
+
+    \begin{figure}[!h]
+    \centering
+
+    \begin{tikzcd}
+        X \arrow[r, bend left=20, "f"]
+          \arrow[r, bend right=20, swap, "!"]
+        & Y
+        \arrow[phantom, from=1-1, to=1-2, yshift=0pt, "\;=\;"]
+        \end{tikzcd}
+\end{figure}
+
+
+\end{example}
+
+\begin{example}
+    Every morphism into a product looks like $(\pi_1 \circ f, \pi_2 \circ f)$.
+    In lambda syntax, this corresponds to the $\eta$ law, $M = (\pi_1 M, \pi_2 M)$, for the product type.
+
+    \begin{figure}[!h]
+        \centering
+    
+        \begin{tikzcd}
+            X \arrow[r, bend left=20, "f"]
+              \arrow[r, bend right=20, swap, "(\pi_1 \circ f{,} \pi_2\circ f)"]
+            & P
+            \arrow[phantom, from=1-1, to=1-2, yshift=0pt, "\;=\;"]
+            \end{tikzcd}
+    \end{figure}
+
+\end{example}
+
+\begin{example}
+    Every morphism into an exponential looks like $\lambda(\app \circ (f \circ \pi_1, \pi_2))$.
+    In lambda syntax, this is corresponds to the $\eta$ law, $f = \lambda x. fx$, for the function type. 
+    \begin{figure}[!h]
+
+    \centering
+    
+    \begin{tikzcd}
+        X \arrow[r, bend left=20, "f"]
+          \arrow[r, bend right=20, swap, "\lambda(\app \circ (f \circ \pi_1{,} \pi_2))"]
+        & E
+        \arrow[phantom, from=1-1, to=1-2, yshift=0pt, "\;=\;"]
+        \end{tikzcd}
+\end{figure}
+
+\end{example}
+Similarly, for any object with a universal property in $C^{op}$, we know we always have a way to construct a morphism \textbf{out of} that object.
+
+
+\end{document}
