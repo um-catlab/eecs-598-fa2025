@@ -1,0 +1,185 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+\usepackage{minted}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{lemma}{Lemma}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%% \lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 1}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\textrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\textrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\newcommand{\Set}{\textrm{Set}}
+\newcommand{\casePlus}[5]{\textrm{case}_{+}\,{#1}\{\sigma_1{#2}\to {#3}|\sigma_2{#4}\to {#5}\}}
+\newcommand{\caseZero}[1]{\textrm{case}_0\,{#1}\{\}}
+\newcommand{\id}{\textrm{id}}
+\newcommand{\lfpt}{\Sigma_{\textrm{lfpt}}}
+
+\newcommand{\cat}{\mathcal}
+
+\begin{document}
+
+\title{Problem Set 3: Functoriality and Naturality}
+\date{Released: September 25, 2025\\
+  %% Updated ??
+  Due: October 9, 2025, 11:59pm
+}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2.
+Your solutions must be submitted in pdf produced using LaTeX.
+
+\begin{problem}{Bifunctors}
+  Functors provide a notion of single-argument morphism between
+  categories. A \emph{bifunctor} from $\cat C$ and $\cat D$ to $\cat
+  E$ is a notion of ``functor of two arguments''. In this problem we
+  will show that various ways of defining a bifunctor are equivalent.
+
+  \begin{itemize}
+  \item A \emph{jointly functorial} bifunctor $F : \cat C , \cat D \to \cat E$ consists of
+    \begin{enumerate}
+    \item An action on objects $F_0 : \cat C_0 \times \cat D_0 \to \cat E_0$
+    \item A joint action on morphisms, which for every $A,A' \in \cat C_0$ and $B , B' \in \cat D_0$ gives a function $F_1 : \cat C_1(A,A')\times \cat D_1(B,B') \to \cat E_1(F_0(A,B), F_0(A',B'))$
+    \item satisfying joint functoriality laws that $F_1(\id_A,\id_B) = \id_{F_0(A,B)}$ and $F_1(f \circ f', g \circ g') = F_1(f,g) \circ F_1(f',g')$
+    \end{enumerate}
+  \item A \emph{separately functorial} bifunctor $F : \cat C , \cat D \to \cat E$ consists of
+    \begin{enumerate}
+    \item An action on objects $F_0 : \cat C_0 \times \cat D_0 \to \cat E_0$
+    \item A \emph{left} action on morphisms, which for every $A,A' \in \cat C_0$ and $B \in \cat D_0$ gives a function $F_l : \cat C_1(A,A') \to \cat E_1(F_0(A,B), F_0(A',B))$
+    \item A \emph{right} action on morhpisms, which for every $A \in \cat C_0$ and $B,B' \in \cat D_0$ gives a function $F_r : \cat D_1(B,B') \to \cat E_1(F_0(A,B), F_0(A,B'))$
+    \item Satisfying left functoriality laws $F_l(\id_A) = \id_{F_0(A,B)}$ and $F_l(f \circ f') = F_l(f) \circ F_l(f')$ 
+    \item Satisfying right functoriality laws $F_r(\id_B) = \id_{F_0(A,B)}$ and $F_r(g \circ g') = F_r(g) \circ F_r(g')$
+    \item Satisfying a commutative law $F_l(f) \circ F_r(g) = F_r(g)\circ F_l(f)$.
+    \end{enumerate}
+  \end{itemize}
+
+  \begin{enumerate}
+  \item Construct a bijection between separately functorial and jointly functorial bifunctors $\cat C, \cat D \to \cat E$.
+  \item Construct a bijection between jointly functorial bifunctors
+    $\cat C, \cat D \to \cat E$ and functors $\cat C \times \cat D \to
+    \cat E$.
+  \item Construct a bijection between separately functorial bifunctors
+    $\cat C, \cat D \to \cat E$ and functors $\cat C \to \cat E^{\cat
+    D}$, where $\cat E^{\cat D}$ is the category of functors from
+    $\cat D$ to $\cat E$ with natural transformations as morphisms.
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{Product Functor}
+  Let $\mathcal C$ be a category such that for every pair of objects
+  $A,B \in \mathcal C$, we have a specified product $(A \times B ,
+  \pi_1 : \mathcal C(A\times B, A), \pi_2 : \mathcal C(A\times B,B))$.
+  \begin{enumerate}
+  \item Show that taking binary products defines a functor $\times :
+    (\cat C \times \cat C) \to \cat C$. That is, show that if we define
+    $\times$ on objects such that $a \times b$ is a product of $a$ and
+    $b$ (with projections $\pi_1 : a\times b \to a$ and $\pi_2 : a
+    \times b \to b$), then you can extend the definition to a
+    functorial action on morphisms.
+  \item Let $\Pi_1 : \mathcal C^2 \to \mathcal C$ be the functor that
+    projects out the first component of $\mathcal C^2$.  Prove that
+    $\pi_1$ defines a natural transformation from $\times$ to $\Pi_1$.
+    Symmetrically, $\pi_2$ is also natural.
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{Theorems for Free, Naturally}
+  The naturality property of a natural transformation is such a strong
+  condition that sometimes we can characterize all natural
+  transformations between two fixed functors, and in many examples
+  there are only finitely many.
+  
+  This has direct applications to programming. The reason is that in a
+  pure polymorphic functional language, given type constructors $F$
+  and $G$ that are functorial, all functions $F(X) \to G(X)$ that are
+  polymorphic in $X$ denote natural transformations! Phil Wadler,
+  building on John Reynold's theory of parametricity called these
+  ``theorems for free'': just from the type of a polymorphic function,
+  the naturality property gives you properties that hold for every
+  function of that type (\cite{wadler,reynolds}).
+  \begin{enumerate}
+  \item Define a natural transformation from $\id_{\Set}$ to
+    $\id_{\Set}$ and prove that it is the only such natural
+    transformation.
+
+  \item Let $\times : \Set \times \Set \to \Set$ be the functor you
+    deifned in the previous problem and let $\times' : \Set \times
+    \Set \to \Set$ be the functor with the arguments swapped $A
+    \times' B = B \times A$.
+
+    Define a natural transformation from $\times$ to $\times'$ and
+    show that it is the only such natural transformation.
+
+  \item Recall the category of pointed sets $\Set_*$ is defined as follows:
+    \begin{itemize}
+    \item Objects are pairs of a set $X$ and a ``basepoint'' $x_0 \in X$.
+    \item A morphism from $(X,x_0)$ to $(Y, y_0)$ is a
+      \emph{base-point-preserving} function, i.e., a function $f : X
+      \to Y$ such that $f(x_0) = y_0$. Identity and composition are
+      simply identity and composition of functions.
+    \end{itemize}
+
+    Define two different natural transformations from
+    $\id_{\Set_*}$ to $\id_{\Set_*}$ and prove that these
+    are the only two such natural transformations.
+  \end{enumerate}
+\end{problem}
+\newpage
+\bibliography{cats}
+
+\end{document}
