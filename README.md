@@ -47,10 +47,10 @@ Schedule:
 | Wed, Oct 01  |Yuchen Jiang|
 | Mon, Oct 06  | Conner Rose |
 | Wed, Oct 08  | Eric Bond  |
-| Wed, Oct 15  |            |
+| Wed, Oct 15  |Jesse Slater|
 | Mon, Oct 20  | Yichen Tao |
 | Wed, Oct 22  |A Bandukwala|
-| Mon, Oct 27  |            |
+| Mon, Oct 27  |Jesse Slater|
 | Wed, Oct 29  |            |
 | Mon, Nov 03  |            |
 | Wed, Nov 05  |  Eric Bond |
