@@ -54,7 +54,7 @@ Schedule:
 | Wed, Oct 29  |            |
 | Mon, Nov 03  |            |
 | Wed, Nov 05  |  Eric Bond |
-| Mon, Nov 10  |            |
+| Mon, Nov 10  |   Ayan C   |
 | Wed, Nov 12  |            |
 | Mon, Nov 17  |            |
 | Wed, Nov 19  |            |
