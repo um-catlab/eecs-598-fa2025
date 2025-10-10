@@ -1,0 +1,222 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm,stmaryrd}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+\usepackage{minted}
+
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%% \lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 4}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\mathrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\mathrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\casePlus}[5]{\mathrm{case}_{+}\,{#1}\{\sigma_1{#2}\to {#3}|\sigma_2{#4}\to {#5}\}}
+\newcommand{\caseZero}[1]{\mathrm{case}_0\,{#1}\{\}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\lfpt}{\Sigma_{\mathrm{lfpt}}}
+
+\newcommand{\cat}{\mathcal}
+
+\newcommand{\stlccart}{\mathrm{STLC}(1,\times)}
+\newcommand{\stlcccc}{\mathrm{STLC}(1,\times,\Rightarrow)}
+\newcommand{\Tm}{\mathrm{Tm}}
+\newcommand{\sem}[1]{\llbracket\cdot\rrbracket}
+
+\begin{document}
+
+\title{Problem Set 4}
+\date{Released: October 9, 2025\\
+  %% Updated ??
+  Due: October 23, 2025, 11:59pm
+}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2.
+Your solutions must be submitted in pdf produced using LaTeX.
+
+\begin{problem}{Functor Comprehension Principle}
+  Previously, you proved that if we have a specified product $A \times
+  B$ for any two objects of $\mathcal C$ that there is a product
+  functor $\mathcal C^2 \to \mathcal C$ that sends the pair $A,B$ to
+  $A \times B$. This property can be generalized to any universal
+  construction, as long as the universal property itself (i.e.,
+  presheaf) is defined functorially.
+
+  \begin{enumerate}
+  \item Let $R : \mathcal C \to \mathcal P\mathcal D$ be a functor to presheaves on $\cat D$
+    such that for every $A \in \mathcal C$, $R(A)$ is representable,
+    i.e., we have a specified $F(A) : \mathcal D$ and natural
+    isomorphism $i(A) : Y(F(A)) \cong R(A)$.
+
+    Extend $F$ to a functor $\mathcal C \to \mathcal D$, i.e., define
+    a functorial action on morphisms that takes $f : \mathcal C(A,B)$
+    to $F(f) : \mathcal D(F(A), F(B))$ that preserves identity and
+    composition.
+  \end{enumerate}
+\end{problem}
+
+\begin{definition}
+  A functor of SCwFs $F : \cat S \to \cat T$ consists of
+  \begin{enumerate}
+  \item A functor $F_c : \cat S_c \to \cat T_c$ of context/substitution categories.
+  \item A function $F_t : \cat S_t \to \cat T_t$ on types.
+  \item A natural transformation $F_{\Tm} : \Tm_{\cat S}(A) \to \Tm_{\cat T}(F_tA) \circ F_c^{\textrm{op}}$
+  \end{enumerate}
+  such that
+  \begin{enumerate}
+  \item $F_c$ preserves the terminal object up to isomorphism in that $F_c(\cdot)$ is terminal.
+  \item $F_c$ preserves the context extension products in that the induced
+    morphism $F_c(\Gamma \times A) \to F_c\Gamma \times F_t A$ is an isomorphism.
+  \end{enumerate}
+
+  Furthermore,
+  \begin{enumerate}
+  \item We say $F$ is \emph{faithful} if for every $\Gamma, A$, the
+    function $F_{\Tm} : \Tm_{\cat S}(A)(\Gamma) \to \Tm_{\cat T}(F_tA)(F_c\Gamma)$
+    is injective.
+  \item If $S$ has a unit type, $1_S$, we say $F$ preserves the unit type
+    if $\Tm_{\cat T}(F_t1_S) \cong \Tm_{\cat T}(1_T)$.
+  \item If $S$ has product types $A \times B$, we say $F$ preserves
+    product types if for every $A,B \in S_t$, that the induced natural
+    transformation $\Tm_{\cat T}(F_t(A \times B)) \cong \Tm_{\cat T}(F_tA \times
+    F_tB)$ is a natural isomorphism.
+  \item If $S$ has function types $A \Rightarrow B$, we say $F$
+    preserves function types if for every $A,B \in S_t$, that the
+    induced natural transformation $\Tm_{\cat T}(F_t(A \Rightarrow B)) \to
+    \Tm_{\cat T}(F_tA \Rightarrow F_tB)$ is an isomorphism.
+  \end{enumerate}
+\end{definition}
+
+For the next problem, you will need to use the initiality of STLC
+semantics.
+\begin{theorem}{Initiality of STLC Semantics (Simplified)}
+  Let $\Sigma$ be an $\stlccart$ signature and let $\sigma$ be an
+  interpretation of $\Sigma$ in a SCwF $\cat S$. Then
+  \begin{enumerate}
+  \item The semantics of $\stlccart$ in $\cat S$ constitutes a SCwF functor
+    $\sem{\cdot} : \stlccart(\Sigma) \to \cat S$ that
+    preserves product and unit types and agrees with $\sigma$ on base
+    types and function symbols.
+  \item If $F : \stlccart(\Sigma) \to \cat S$ is also a SCwF functor
+    that preserves product and unit types as well as agreeing with
+    $\sigma$ on base types and function symbols, then there is
+    a\footnote{this natural isomorphism is unique among natural
+    isomorphisms that respect the type structure in an appropriate
+    sense, but for this problem set we need only its existence}
+    natural isomorphism $\sem{\cdot}_c \cong F_c$.
+  \end{enumerate}
+
+  An analogous theorem holds for $\stlcccc(\Sigma)$ but where the
+  functors $\sem{\cdot}, F$ additionally preserve function types .
+\end{theorem}
+
+\begin{problem}{Conservativity of Adding Function Types}
+  Let $\Gamma \vdash M : A$ and $\Gamma \vdash N : B$ be terms in
+  $\stlccart(\Sigma)$. Then we can view the same terms as terms
+  in the extended language $\stlcccc(\Sigma)$. Does
+  the addition of new proof terms change whether or not we can prove
+  $M = N$?
+
+  If $M = N$ is provable in the equational theory of
+  $\stlccart(\Sigma)$, then clearly it is also provable in the
+  extended logic $\stlcccc(\Sigma)$ since the latter logic contains
+  all of the proof rules of the former. However, the converse is
+  non-trivial to establish, and is called the \emph{conservativity} of
+  the equational theory of $\stlcccc(\Sigma)$ over
+  $\stlccart(\Sigma)$. It says that adding function types to our
+  language doesn't allow us to prove any new theorems that could be
+  formulated in the original logic. Compare the conservativity theorem
+  we proved for IPL in Problem Set 1.
+
+  Part 3 is quite difficult, so you may wish to finish the other parts
+  of the construction before returning to it.
+  \begin{enumerate}
+  \item Show that if $F : \cat S \to \cat T$ and $G : \cat S \to \cat
+    T$ are SCwF functors, and $G \circ F$ is faithful, then $F$ is
+    faithful.
+  \item Show that if $F, F' : \cat S \to \cat T$ are SCwF functors and
+    $\alpha : F_c \cong F'_c$ is a natural isomorphism then $F$ is
+    faithful if and only if $F'$ is faithful.
+  \item (CHALLENGING) Show that for any category $\cat C$, the category of
+    presheaves $\mathcal P\cat C$ is cartesian closed (HINT: the
+    construction of exponentials is a direct generalization of the
+    Heyting implication structure on downward closed sets in PS1).
+  \item Define for any SCwF $\cat S$, a SCwF functor $Y : \cat S \to
+    \textrm{democratic}(\mathcal P\cat S_c)$ that is faithful and
+    preserves unit and product types.
+  \item Define a SCwF functor $i : \stlccart(\Sigma) \to
+    \stlcccc(\Sigma)$ that sends base types/function symbols to
+    themselves and preserves product and unit types.
+  \item Define a SCwF functor $j : \stlcccc(\Sigma) \to
+    \textrm{democratic}(\mathcal P\cat {S_c})$ that agrees with $Y :
+    \stlccart(\Sigma) \to \textrm{democratic}(\mathcal P\cat {S_c})$
+    on base types/function symbols and preserves product and unit
+    types.
+
+  \item Conclude that $i$ is faithful\footnote{through a more complex
+  construction, it can be established that $i$ is also full. See Crole
+  chapter 4.10 for a similar proof.}, and therefore that adding
+    function types to STLC is a conservative extension of the
+    equational theory.
+  \end{enumerate}
+\end{problem}
+
+\end{document}
