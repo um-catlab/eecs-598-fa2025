@@ -51,7 +51,7 @@ Schedule:
 | Mon, Oct 20  | Yichen Tao |
 | Wed, Oct 22  |A Bandukwala|
 | Mon, Oct 27  |Jesse Slater|
-| Wed, Oct 29  |            |
+| Wed, Oct 29  | Ivan Wei   |
 | Mon, Nov 03  |            |
 | Wed, Nov 05  |  Eric Bond |
 | Mon, Nov 10  |   Ayan C   |
