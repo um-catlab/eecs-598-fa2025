@@ -1,0 +1,283 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+\usepackage{minted}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{lemma}{Lemma}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%% \lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 1}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\textrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\textrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\newcommand{\Set}{\textrm{Set}}
+\newcommand{\casePlus}[5]{\textrm{case}_{+}\,{#1}\{\sigma_1{#2}\to {#3}|\sigma_2{#4}\to {#5}\}}
+\newcommand{\caseZero}[1]{\textrm{case}_0\,{#1}\{\}}
+\newcommand{\id}{\textrm{id}}
+\newcommand{\lfpt}{\Sigma_{\textrm{lfpt}}}
+
+\begin{document}
+
+\title{Problem Set 2: Simply Typed Lambda Calculus}
+\date{Released: September 11, 2025\\
+  %% Updated September 3, 2025\\
+  Due: September 25, 2025, 11:59pm
+}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2 or
+3. Your solutions must be submitted in pdf produced using LaTeX.
+
+\begin{problem}{Laws of Exponentiation}
+  We say that $x:A \vdash M : B$ and $y: B \vdash N : A$ form an
+  \emph{isomorphism} if $x:A \vdash N[M/y] = x$ and $y:B \vdash M[N/x]
+  = y: B$. In this case we say $A$ and $B$ are isomorphic, written $A
+  \cong B$.
+
+  Implement the lambda terms for the following isomorphisms. You do
+  not need to include the typing derivation, just the terms
+  themselves. Provide proofs that (1) and (4) are isomorphisms using
+  the equational theory. You do not need to explicitly write the proof
+  tree, but just explain what rules are used to justify the
+  equalities.
+  \begin{enumerate}
+  \item $A \Rightarrow B \Rightarrow C \cong (A \times B) \Rightarrow C$
+  \item $A \Rightarrow (B \times C) \cong (A \Rightarrow B) \times (A \Rightarrow C)$
+  \item $(A \Rightarrow 1) \cong 1$
+  \item $(A + B) \Rightarrow C \cong (A \Rightarrow C) \times (B \Rightarrow C)$
+  \item $0 \Rightarrow C \cong 1$
+  \end{enumerate}
+  This gives an idea of why $A \Rightarrow B$ is in category theory
+  sometimes called the \emph{exponential} and written $B^A$.
+\end{problem}
+
+\begin{problem}{Lawvere's Fixed Point Theorem}
+  We saw that Boolean semantics of IPL was incomplete for the
+  signature consisting of a single propositional variable, because the
+  law of excluded middle is true in all Boolean models but not
+  provable.
+
+  In this problem, we consider a similar question for Set-semantics of
+  STLC. Define the signature $\lfpt$:
+  \begin{enumerate}
+  \item Two base type $X$ and $D$
+  \item Two function symbols $p : X \to (X \Rightarrow D)$ and $e : (X \Rightarrow D) \to X$
+  \item One equation (called ``retraction'') $f : X \Rightarrow D \vdash p(e(f)) = f : X \Rightarrow D$
+  \end{enumerate}
+
+  Such a signature may seem strange at first glance, but for any type
+  $d$ in a functional programming language with recursive type
+  definitions, we can define a corresponding type $X d$ and functions
+  $p,E$ that satisfying the retraction axiom. For example in Haskell:
+  % TODO: make this look nicer
+\begin{minted}{haskell}
+data X d = E (X d -> d)
+
+p :: X d -> (X d -> d)
+p (E f) = f
+\end{minted}
+
+  For this problem, we will prove that this signature only has
+  \emph{trivial} models in Set, and show a famous application of this
+  triviality. This triviality implies that functional programming
+  languages that support unrestricted recursive type definitions
+  cannot be given non-trivial Set-theoretic semantics. Later in the
+  course we will see that there are non-trivial models in other
+  categories besides $\Set$.
+  \begin{enumerate}
+  \item In STLC generated by $\lfpt$, construct a
+    \emph{fixed point combinator} for the type $D$, that is define
+    \begin{itemize}
+    \item A term $\cdot \vdash \texttt{fix} : (D \Rightarrow D) \Rightarrow D$
+    \item That maps any function to a fixed point in that it satisfies the equation:
+      \[ f : D \Rightarrow D \vdash f(\texttt{fix}\,f) = \texttt{fix}\,f : D\]
+    \end{itemize}
+  \item Show that that the equation
+    \[ x:D,y:D \vdash x = y : D \]
+    is true in any model of $\lfpt$ in $\Set$.
+  \item As a corollary of part (2), prove \emph{Cantor's theorem}:
+    that there is no surjective function from a set $S$ to its
+    powerset $\mathcal P S$. Recall that the powerset of $S$ is
+    equivalent to the functions from $S$ to the booleans $2^S$. You
+    will need to use the axiom of choice\footnote{A more refined
+    version of this argument can prove Cantor's theorem without the
+    axiom of choice.}.
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{Simultaneous Substitution}
+  When all variables are known to be distinct, substitution $M[N/x]$
+  can simply be defined as the replacement of $x$ with $N$ everywhere
+  in the term $M$. This definition is the STLC version of the
+  admissibility of the substitution principle of IPL:
+
+  \[
+  \inferrule*[Right=Subst(*)]
+  {\Gamma \vdash M : A \and \Gamma, x:A \vdash N : B}
+  {\Gamma \vdash N[M/x]}
+  \]
+
+  The admissible principle of contraction can also be viewed as a
+  textual substitution in the term:
+
+  \[
+  \inferrule*[Right=Contraction(*)]
+  {\Gamma , x: A, y:A, \Delta \vdash M : C}
+  {\Gamma , x: A, \Delta \vdash M[x/y] : C}
+  \]
+
+  On the other hand, the use of variables to stand for assumptions
+  means that exchange and weakening have no effect on the proof term:
+  \begin{mathpar}
+  \inferrule*[right=Exchange(*)]
+  {\Gamma , y: B, x:A, \Delta \vdash M : C}
+  {\Gamma , x:A, y: B, \Delta \vdash M : C}
+  \and
+  \inferrule*[right=Weakening(*)]
+  {\Gamma, \Delta \vdash M : C}
+  {\Gamma , x:A, \Delta \vdash M : C}
+  \end{mathpar}
+
+  In this exercise you will prove these principles are admissible and
+  additionally prove some \emph{equations} about substitution.
+  %
+  Experience shows that the simplest way to prove these properties
+  involves generalizing from ``one-place'' substitutions like $M[N/x]$
+  to ``simultaneous'' substitutions that simultaneously substitute for
+  \emph{all} free variables in a term.
+
+  We define a (simultaneous) substitution from $\Delta$ to $\Gamma$ to
+  be a function $\gamma$ that for each variable $x:A \in \Gamma$
+  produces a term $\Delta \vdash \gamma(x) : A$. We write $\gamma :
+  \Delta \to \Gamma$ to mean a substitution from $\Delta$ to
+  $\Gamma$. Note that this definition is contravariant in that a
+  substitution $\gamma : \Delta \to \Gamma$ maps variables in $\Gamma$
+  to terms well-typed under $\Delta$.
+
+  We can then define an admissible action of substitution:
+  \[
+  \inferrule*[Right=GenSubst]
+  {\gamma : \Delta \to \Gamma \and
+   \Gamma \vdash M : A}
+  {\Delta \vdash M[\gamma] : A}
+  \]
+
+  Defined by induction on $M$ as follows:
+  \begin{align*}
+    x[\gamma] &= \gamma(x)\\
+    f(M_1,\ldots,)[\gamma] &= f(M_1[\gamma],\ldots)\\
+    (M, N)[\gamma] &= (M[\gamma], N[\gamma])\\
+    (\pi_j M)[\gamma] &= \pi_j M[\gamma]\\
+    ()[\gamma] &= ()\\
+    (\sigma_j M)[\gamma] &= \sigma_j M[\gamma]\\
+    (\casePlus M {x_1} {N_1} {x_2} {N_2})[\gamma] &= (\casePlus {M[\gamma]} {x_1} {N_1[\gamma, x_1/x_1]} {x_2} {N_2[\gamma, x_2/x_2]})\\
+    (\caseZero M)[\gamma] &= \caseZero {M[\gamma]}\\
+    (\lambda x. M)[\gamma] &= \lambda x. M[\gamma, x/x]\\
+    (M N)[\gamma] &= M[\gamma]\,N[\gamma]\\
+  \end{align*}
+
+  Where the notation $\gamma, M/x$ is the extension of the the function to map $x$ to $M$:
+  \begin{align*}
+    (\gamma,M/x)(y) &= M \tag{if $x = y$}\\
+    (\gamma, M/x)(y) &= \gamma(y) \tag{if $x \neq y$}
+  \end{align*}
+
+  Define the \emph{identity} substitution $\textrm{id}_\Gamma : \Gamma
+  \to \Gamma$ to map each variable in $\Gamma$ to itself:
+  $\textrm{id}(x) = x$.
+
+  Given $\gamma : \Delta \to \Gamma$ and $\delta : \Xi \to \Delta$,
+  define the \emph{composition} $\gamma \circ \delta : \Xi \to \Gamma$
+  as $(\gamma \circ \delta)(x) = (\gamma(x))[\delta]$.
+
+  Below assume $\gamma : \Delta \to \Gamma$, $\delta : \Xi \to
+  \Delta$, $\xi : \Xi' \to \Xi$ and $\Gamma \vdash M : A$.
+
+  First, observe (no need to write the proof), that the following
+  generalized weakening principle is admissible, if $\Gamma \subseteq
+  \Gamma'$, then any term typeable in the smaller context $\Gamma$ is
+  also typable in the larger context $\Gamma'$ with the same syntax:
+  \begin{mathpar}
+    \inferrule*[Right=GenWeak]
+               {\Gamma\vdash M : A}
+               {\Gamma' \vdash M : A}
+  \end{mathpar}
+  The proof is by induction on the typing derivation of $M$.
+
+  \begin{enumerate}
+  \item Define simultaneous substitutions that correspond to the principles of
+    one-place substitution, weakening, exchange and contraction.
+  \item Show (by induction on the derivation of $\Gamma \vdash M : A$)
+    that $\Delta \vdash M[\gamma] : A$, i.e., that the GenSubst typing
+    rule is admissible. You only need to show the following
+    representative cases: $M = x$, $M = f(M_0,\ldots)$, $M = \lambda
+    x. M'$ and $M = M'\,N$. Where is the GenWeak principle needed?
+
+  \item Show (by induction on $M$) that $M[\id_\Gamma] = M$. Note that this and the
+    following equalities are exact syntactic equalities, you will not
+    need to use any $\beta\eta$ rules to prove it.
+  \item Show (by induction on $M$) that $M[\gamma \circ \delta] = (M[\gamma])[\delta]$
+  \item Show that $\gamma \circ \id_{\Delta} = \gamma$ and
+    $\id_{\Gamma} \circ \gamma = \gamma$.
+  \item Show as a corollary that if $x_2 : A_2 \vdash N_1 : A_1$ and
+    $x_3 : A_3 \vdash N_2 : A_2$ and $x_4 : A_4 \vdash N_3 : A_3$ then
+    $(N_1[N_2/x_2])[N_3/x_3] = N_1[N_2[N_3/x_3]/x_2]$.
+  \item Show that $(\gamma \circ \delta) \circ \xi = \gamma \circ (\delta \circ \xi)$
+  \end{enumerate}
+\end{problem}
+
+\end{document}

@@ -1,0 +1,177 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\B}{\mathbb{B}}
+\newcommand*{\mtset}{\ensuremath{\varnothing}}
+
+\DeclareMathOperator{\IPL}{IPL}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\setlength{\headheight}{15pt}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 3: Initiality of IPL}
+\author{Lecturer: Max S. New\\ Scribe: Ayan Chowdhury}
+\date{September 3, 2025}
+\maketitle
+
+\begin{definition}[BiHeyting Algebra]
+    A poset with finite meets, finite joins, and Heyting implication.
+\end{definition}
+
+\begin{definition}[BiHeyting Pre-Algebra]
+    A preorder with specified finite meets, finite joins, and Heyting implication. A specified meet/join/implication is a binary function satisfying the universal property of meet/join/implication. There could be other elements satisfying the universal property chosen to be outputs of our specified functions. However, our functions are unique up to order equivalence.
+\end{definition}
+
+\begin{theorem}[The Soundness Theorem]
+    Fix a signature $\Sigma$. Given an interpretation $i$ of $\Sigma$ in a biHeyting pre-algebra $P$, if $\Gamma \vdash A$ in $\IPL(\Sigma)$ then $[[\Gamma]] \le [[A]]$ in $P$, where $[[\cdot]]$ is defined by 
+    \[
+        [[X]] = i(x), \quad\quad [[A \land B]] = [[A]] \land [[B]], \quad\quad [[A \lor B]] = [[A]] \lor [[B]], \quad\quad \cdots
+    \]
+\end{theorem}
+\begin{proof}
+    This is done by induction on deduction rules. 
+\end{proof}
+
+\begin{theorem}[The Completeness Theorem]
+    Fix a signature $\Sigma$. We have that $\Gamma \vdash A$ is provable in $\IPL(\Sigma)$ if $[[\Gamma]] \le [[A]]$ in all biHeyting pre-algebras.
+\end{theorem}
+\begin{proof}
+    Let us assume $[[\Gamma]] \le [[A]]$ in all biHeyting pre-algebras. We have that the propositions of $\IPL$ form a biHeyting pre-algebra. It follows that $[[\Gamma]] \vdash A$. If $\Gamma = B_1, \cdots, B_n$, then we have that $[[B_1]], \cdots, [[B_n]] \vdash A$, which is equivalent to $B_1, \cdots, B_n \vdash A$, so we have $\Gamma \vdash A$.
+\end{proof}
+
+\begin{definition}[Monotone function]
+    Let $P$ and $Q$ be pre-orders. A monotone function $f: P \to Q$ satisfies if $x \le y$ then $f(x) \le f(y)$.
+\end{definition}
+
+\noindent Our denotation function $[[\cdot]]: \IPL(\Sigma) \to P$, where $P$ is a biHeyting pre-algebra, is an example of a monotone function. 
+
+\begin{definition}[Isomorphism]
+    Let $P$ and $Q$ be pre-orders. An isomorphism $f: P \to Q$ is a monotone function with a monotone inverse. 
+\end{definition}
+
+\noindent Functions fail to be isomorphisms if they are not bijective or if the inverse fails to preserve ordering.  
+
+
+Let us consider one particularly interesting non-example of an isomorphism. Let $P$ denote the pre-order of all finite sets ordered by cardinality. Let $\N$ denote the natural numbers with its usual ordering. There exists a natural monotone function from $P$ to $\N$ given by taking the cardinality of the set. There also exists a natural monotone function from $\N$ to $P$ sending $n$ to $\{a \in \N \, | \, a < n\}$. However, these fail to form an isomorphism as many sets in $P$ get sent to the same set in $\N$. This motivates the definition of an equivalence of preorders.
+
+\begin{definition}[Equivalence of pre-orders]
+    An equivalence between $P$ and $Q$ is a monotone function $f: P \to Q$ and a monotone function $f^{-1}: Q \to P$ such that $f^{-1}(f(p))$ is order equivalent to $p$ and $f(f^{-1}(q))$ is order equivalent to $q$.
+\end{definition}
+
+\noindent We will denote the equivalence relation of order equivalence with $\ge\le$.
+
+
+Note that for any pre-order we have that $P$ is equivalent to $P / \ge\le$ (though we need the Axiom of Choice).
+
+\begin{definition}[biHeyting homomorphism]
+    Let $P$ and $Q$ be biHeyting pre-algebras. 
+    
+    A strict biHeyting homomorphism is a monotone function from $P$ to $Q$ which preserves finite specified meets, finite specified joins, and specified Heyting implication. 
+    
+    A weak biHeyting homomorphism is a monotone function from $P$ to $Q$ which up to isomorphism preserves finite meets, finite joins, and Heyting implication.
+\end{definition}
+
+\begin{theorem}[The Initiality Theorem]
+    Fix a signature $\Sigma$. We have that $\IPL(\Sigma)$ is a biHeyting pre-algebra, with the natural interpretation. For any biHeyting pre-algebra $P$ with interpretation $i$ of $\Sigma$, there exists an essentially unique weak homomorphism that is also a unique strict homomorphism from $\IPL(\Sigma)$ to $P$ that preserves the interpretation $[[X]]_i = i(X)$. This can be phrased as 
+    \[
+    \begin{tikzcd}
+        {\text{IPL}(\Sigma)} && P \\
+        & {\Sigma_0}
+        \arrow["{[[\cdot]]_i}", dashed, from=1-1, to=1-3]
+        \arrow[from=2-2, to=1-1]
+        \arrow["i"', from=2-2, to=1-3]
+    \end{tikzcd}
+    \]
+    there exists such a $[[\cdot]]_i$ which is an essentially weak homomorphism and a unique strict homomorphism which makes this diagram commute.  
+\end{theorem}
+\begin{proof}
+    We can define $[[\cdot]]_i$ inductively, as it is defined on $\Sigma_0$, and thus extends to a map on all of $\IPL(\Sigma)$.
+
+    Similarly we can show that any such map $f$ is a unique strict homomorphism. For any $X \in \Sigma_0$ we have that $f(X) = i(X)$. By induction, as $f$ preserves finite meets, finite joins, and Heyting implication, it follows that $f = [[\cdot]]_i$. A similar induction gives us that $f$ is a an essentially weak homomorphism. 
+\end{proof}
+
+\noindent We say that $\IPL(\Sigma)$ is initial among all biHeyting pre-algebras with a choice of interpretation over $\Sigma$.
+
+\begin{theorem}
+    Consider if we have another initial object, $F(\Sigma)$. That is $F(\Sigma)$ satisfies our initiality theorem. Then we have that $\IPL(\Sigma)$ is uniquely equivalent to $F(\Sigma)$.
+\end{theorem}
+\begin{proof}
+    We have the existence of a unique up to order equivalence weak homomorphism from $\IPL(\Sigma)$ to $F(\Sigma)$, denoted $[[\cdot]]_i$. We also have the existence unique up to order equivalence weak homomorphism from $\IPL(\Sigma)$ to $F(\Sigma)$, denoted $((\cdot))_i$.
+
+    We can show that weak biHeyting pre-algebra homomorphism compose. We can also show that the identity is a weak biHeyting pre-algebra homomorphism. It would then follow that $(([[\cdot]]_i))_i$ and $[[((\cdot))_i]]_i$ are biHeyting pre-algebra homomorphisms from $\IPL(\Sigma)$ to $\IPL(\Sigma)$ and $F(\Sigma)$ and $F(\Sigma)$ respectively. As the identity is a biHeyting pre-algebra homomorphism, and thus the unique such up to order-equivalence, we have that these maps are order-equivalent to the identity. Therefore $\IPL(\Sigma)$ and $F(\Sigma)$ are equivalent.
+
+    As our homomorphisms from the universal property are unique, it follows that such an equivalence is unique up to order equivalence. 
+\end{proof}
+
+\noindent Note that the conditions that our homomorphisms compose and the identiy is a homomorphism are exactly the conditions needed of a category.
+
+\begin{theorem}
+    Booleans, denoted $\B$ are weakly initial for biHeyting pre-algebras on $\mtset$.
+\end{theorem}
+\begin{proof}
+    Let $P$ be a biHeyting pre-algebra. We can construct a mapping $f_p: \B \to P$ where $f_p(0) = \bot_P$ and $f_p(1) = \top_P$. Let us show that such a mapping is a weak biHeyting homomorphism. We have that $\bot$ and $\top$ are preserved. For each operation, we can prove by cases on the values in $\B$ and the rules of boolean algebra that operations are preserved up to order equivalence under $f_p$. Thus $f_p$ is indeed a weak biHeyting homomorphism, so we have that $\B$ is weakly initial. 
+\end{proof}
+
+\noindent Note that in general our homomorphism will not be strict if $P$ is a true pre-order and there are multiple $\top$ and $\bot$ elements. For example the map to $\IPL$ sends $0 \land 0 = 0$ to $\bot$ rather than $\bot \land \bot$.
+
+\begin{theorem}
+    In $\IPL(\mtset)$ whether $\Gamma \vdash A$ is provable is decidable. 
+\end{theorem}
+\begin{proof}
+    By theorem $4$ and $5$ we have that $\IPL(\mtset)$ is equivalent to $\B$. Thus for any $\Gamma \vdash A$ in $\IPL(\mtset)$ we can map to $\B$, determine in finite time if $[[\Gamma]] \le [[A]]$ using boolean rules. Mapping back with $f_p$ then tells us that $f_p([[\Gamma]]) \vdash f_p([[A]])$ which by equivalence gives us $\Gamma \vdash A$.
+\end{proof}
+
+\noindent This shows that while $\IPL$ does not in general admit the law of excluded middle or double negation elimination, $\IPL(\mtset)$ is equivalent to $\B$, giving us:
+
+\begin{corollary}
+    The law of excluded middle and double negation elimination are admissable in $\IPL(\mtset)$.
+\end{corollary}
+
+
+\end{document}

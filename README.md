@@ -9,22 +9,26 @@ you add your name to one of the open slots.
 
 ## Problem Set Solution Signup
 
-| Problem Set | Presenter 1 | Presenter 2 | Presenter 3 (if necessary) |
-|:-----------:|-------------|-------------|----------------------------|
-| PS1         | Ivan Wei    |             |                            |
-| PS2         | Jesse Slater|             |                            |
-| PS3         |   Ayan C    |             |                            |
-| PS4         |             |             |                            |
-| PS5         |             |             |                            |
-| PS6         |             |             |                            |
+Problem set solutions will be presented in the lecture period after the problem set is due.
+Everyone taking the class (including auditors) must present once.
+
+| Problem Set | Presenter 1 | Presenter 2 | 
+|:-----------:|-------------|-------------|
+| PS1         | Ivan Wei    |             |
+| PS2         | Jesse Slater|             |
+| PS3         |   Ayan C    |             |
+| PS4         | Chris Davis |             |
+| PS5         |             |             |
+| PS6         |             |             |
 
 ## Scribed Notes Signup
 
-Sign up by submitting a pull request where you add your name. to the
+Sign up by submitting a pull request where you add your name to the
 date you want to volunteer. Then when you finish your notes submit
 them with the name `notes/MM-DD-notes.tex` where `MM` is replaced by
 the month (08, 09, 10, 11, 12) and `DD` is replaced by the day of the
-lecture. See the file `notes/MM-DD-notes.tex` for the template.
+lecture. See the file `notes/MM-DD-notes.tex` for the template. With the
+number of students this semester, everyone will need to scribe 3 lectures.
 
 Schedule:
 
@@ -35,27 +39,27 @@ Schedule:
 | Wed, Sep 03  |   Ayan C   |
 | Mon, Sep 08  |A Bandukwala|
 | Wed, Sep 10  |Jesse Slater|
-| Mon, Sep 15  |            |
-| Wed, Sep 17  |            |
-| Mon, Sep 22  |            |
-| Wed, Sep 24  |            |
-| Mon, Sep 29  |            |
-| Wed, Oct 01  |            |
-| Mon, Oct 06  |            |
-| Wed, Oct 08  |            |
-| Wed, Oct 15  |            |
-| Mon, Oct 20  |            |
-| Wed, Oct 22  |            |
-| Mon, Oct 27  |            |
+| Mon, Sep 15  |Chris Davis |
+| Wed, Sep 17  |Yuchen Jiang|
+| Mon, Sep 22  | Yichen Tao |
+| Wed, Sep 24  | Eric Bond  |
+| Mon, Sep 29  | Max New    |
+| Wed, Oct 01  |Yuchen Jiang|
+| Mon, Oct 06  | Conner Rose |
+| Wed, Oct 08  | Eric Bond  |
+| Wed, Oct 15  |Jesse Slater|
+| Mon, Oct 20  | Yichen Tao |
+| Wed, Oct 22  |A Bandukwala|
+| Mon, Oct 27  |Jesse Slater|
 | Wed, Oct 29  |            |
 | Mon, Nov 03  |            |
-| Wed, Nov 05  |            |
-| Mon, Nov 10  |            |
+| Wed, Nov 05  |  Eric Bond |
+| Mon, Nov 10  |   Ayan C   |
 | Wed, Nov 12  |            |
 | Mon, Nov 17  |            |
 | Wed, Nov 19  |            |
 | Wed, Nov 20  |            |
 | Mon, Nov 24  |            |
-| Mon, Dec 01  |            |
+| Mon, Dec 01  |A Bandukwala|
 | Wed, Dec 03  |            |
 | Mon, Dec 08  |            |
