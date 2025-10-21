@@ -1,0 +1,478 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{bbold}
+\usepackage{CJKutf8}
+\usepackage{tikz-cd,mathpartir}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs,mathrsfs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\twoheadrightarrowtail}{\mathrel{\ooalign{\hfil$\rightarrowtail$\hfil\cr\hfil$\twoheadrightarrow$\hfil}}}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\psh}[1]{\mathcal{#1}}
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\yo}{\begin{CJK}{UTF8}{gbsn}\textnormal{よ}\end{CJK}}
+% \newcommand{\yo}{\mathrm{yo}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\yotrans}[1]{\lbrack\,#1\,\rbrack}
+\newcommand{\natrans}{\Rightarrow}
+\newcommand{\natiso}{\overset{\sim}{\longrightarrow}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\setlength{\headheight}{14.49998pt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 11: Universal Properties III}
+\author{Lecturer: Max S. New\\ Scribe: Yuchen Jiang}
+\date{October 1, 2025}
+\maketitle
+
+\section{Presheaves and Yoneda's Lemma}
+
+Recap: definition of a presheaf.
+
+\begin{definition}
+  A presheaf $\psh{P}$ on a category $\cat{C}$ defines
+  \begin{itemize}
+    \item $\forall X \in C_0$, a set $\psh{P}(X)$
+    \item $\forall X, Y \in C_0$ and $f : Y \to X$, an action $\circ_\psh{P}$
+      \begin{mathpar}
+        \inferrule{
+          p: \psh{P}(X) \\
+          f: Y \to X
+        }{
+          p \circ_\psh{P} f : \psh{P}(Y)
+        }
+      \end{mathpar}
+      and the action should look like composition, i.e. the identity and composition of morphisms in $\cat{C}$ should be preserved.
+      \begin{align*}
+        p \circ_\psh{P} \id_X &= p \\
+        p \circ_\psh{P} (g \circ_\cat{C} f) &= (p \circ_\psh{P} g) \circ_\psh{P} f
+      \end{align*}
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  The definition above can be interpreted as a functor:
+  a presheaf $\psh{P}$ on a category $\cat{C}$ is a functor $P: \cat{C}^{op} \to \Set$.
+\end{remark}
+
+As a result, the right notion of morphism between presheaves is a natural transformation. Let $\psh{P}$ and $\psh{Q}$ be presheaves on $\cat{C}$, then a natural transformation $\alpha: \psh{P} \natrans \psh{Q}$ is a family of morphisms $\alpha_X: \psh{P}(X) \to \psh{Q}(X)$ for all $X \in \cat{C}_0$
+s.t.
+\[
+  \forall f: Y \to X \text{ and } p: \psh{P}(X),
+  \alpha_Y(p \circ_\psh{P} f) = \alpha_X(p) \circ_\psh{Q} f
+\]
+
+We also talked about the analogy between sets, preorders, and categories.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{c|c|c}
+    Set & Preorder & Category \\
+    \hline
+    $=$ & $\leq$ & $\to$ \\
+    \hline
+    Functions & Monotone Functions & Functors \\
+    \hline
+    Subsets / Predicates & Downwards-Closed Subsets & Presheaves \\
+  \end{tabular}
+\end{table}
+
+Now let's talk about how the Yoneda's Lemma looks like in these different contexts.
+
+\subsection*{Yoneda's Lemma for Sets}
+
+For any set $X$, there exists its power set $\pow X$ and a function
+\[
+  X \overset{\{-\}}{\longrightarrow} \pow X
+\]
+which is the singleton set. Yoneda's Lemma for Sets simply states that $\forall X, \forall P \subseteq X$,
+\[
+  \{x\} = P \text{ iff } x \in P \text{ and } \forall y \in P,~y = x
+\]
+
+We can instead think of $\pow$ as a function $X \to \mathbb{2}$, i.e. a predicate, then the following holds:
+\[
+  \exists ! x. P(x) := \{x\} = \{ y ~|~ P(y) \}
+\]
+
+\subsection*{Yoneda's Lemma for Preorders}
+
+We've already seen the baby Yoneda's Lemma for preorders. $\forall x, S \subseteq_\text{down} P$, the principle downset $\downarrow x \subseteq S$ iff $x \in S$.
+
+
+\subsection*{Yoneda's Lemma for Categories}
+
+Given a category $\cat{C}$, we can define a presheaf $\yo$ for each object $X \in \cat{C}_0$ as follows:
+\begin{itemize}
+  \item $\yo X : \cat{C}^{op} \to \Set$
+  \item At some object $Y$, $(\yo X)(Y) := \cat{C}(Y, X)$
+  \item Since $(\yo X)(Y)$ is a set of morphisms, we can specify the action of $\yo X$ as
+  \begin{mathpar}
+    \inferrule{
+      f \in (\yo X)(Y) \\
+      g \in \cat{C}(Z, Y)
+    }{
+      f \circ_{\yo} g := f \circ g
+    }
+  \end{mathpar}
+\end{itemize}
+
+Then the Yoneda's Lemma is a characterization of the representable presheaves, which is called the Yoneda embedding. It's a universal property of the presheaf $\yo X$ as an object of the category of presheaves.
+
+Stepping back for a second, we can ask a question: what's an obvious element of the presheaf $\yo X$? Well we can certainly think of the identity morphism:
+$$\id_X: (\yo X)(X)$$
+
+In fact, that's the only element that is guaranteed to be in the presheaf. What the Yoneda lemma tells us is that the presheaf $\yo X$ is freely generated from this one element $\id_X$.
+
+\begin{lemma}
+  $\forall p : \psh{P}(X)$, there exists a unique natural transformation $\yotrans{p} : \yo X \natrans \psh{P}$ s.t. $\yotrans{p}_X(\id_X) = p$
+\end{lemma}
+
+\begin{proof}
+  Given $p : \psh{P}(X)$, we can define $\yotrans{p} : \yo X \natrans \psh{P}$ as follows: $\forall Y \in \cat{C}_0$,
+  $$
+    \yotrans{p}_Y(f) := p \circ_\psh{P} f
+  $$
+
+  Then we need to show that it's natural and unique.
+  
+  By natural we mean $\yotrans{p}_X(\id_X) = p$ and $\yotrans{p} (g \circ f) = \yotrans{p} (g) \circ_\psh{P} f$. They both follow from the definition of $\yotrans{p}$.
+
+  By unique we mean for any two natural transformations $\alpha, \beta: \yo X \natrans \psh{P}$ s.t. $\alpha_X(\id_X) = p = \beta_X(\id_X)$, we have $\alpha = \beta$. We want to show that $\alpha_Y(f) = \beta_Y(f)$ for all $Y \in \cat{C}_0$ and $f: Y \to X$. Since
+  $$
+  \alpha_Y(f) = \alpha_Y(\id_X \circ f) = \alpha_X(\id_X) \circ_\psh{P} f = p \circ_\psh{P} f
+  $$
+  and similarly for $\beta$, we get $\alpha_Y(f) = \beta_Y(f)$. Therefore $\alpha = \beta$.
+\end{proof}
+
+\section{Universal Elements of Presheaves}
+
+We can further generalize $\yo X$ in the Yoneda Embedding to be an arbitrary presheaf $\psh{P}$ with the concept of universal elements of presheaves.
+A universal $X$-element of presheaf $\psh{P}$ is an element $\eta: \psh{P}(X)$ s.t. $\forall q: \psh{Q}(X)$, there exists a unique $\yotrans{q}: \psh{P} \natrans \psh{Q}$ satisfying
+$$
+  \yotrans{q}_X(\eta) = q
+$$
+
+Universal elements are unique up to unique isomorphism.
+
+\begin{theorem}
+  Given a presheaf $\psh{P}$ and an universal $X$-element $\eta: \psh{P}(X)$ and another presheaf $\psh{Q}$ and an universal $X$-element $\epsilon: \psh{Q}(X)$, there exists a unique natural isomorphism $i: \psh{P} \natrans \psh{Q}$ s.t. $i_X(\eta) = \epsilon$.
+\end{theorem}
+
+\begin{proof}
+  We simply define $i := \yotrans{\epsilon} : \psh{P} \natrans \psh{Q}$ and its inverse $i^{-1} := \yotrans{\eta} : \psh{Q} \natrans \psh{P}$. Then we verify that $i$ is indeed a natural isomorphism. We want to show (and similarly for $i \circ i^{-1}$):
+  $$
+    i^{-1} \circ i = \id : \psh{P} \natrans \psh{P}
+  $$
+  which means $i^{-1}(i(\eta)) = \eta$, namely $\yotrans{\eta}(\yotrans{\epsilon}(\eta)) = \eta$. By definition, $\yotrans{\epsilon}(\eta) = \epsilon$, and $\yotrans{\eta}(\epsilon) = \eta$. Therefore the above equation holds, and similarly for the other direction.
+\end{proof}
+
+\begin{corollary}
+  If $\eta_X: \psh{P}(X)$ is a universal element, then
+  $$
+    \yotrans{\eta_X} : \yo X \natiso \psh{P}
+  $$
+\end{corollary}
+We denote natural isomorphism by $\natiso$.
+
+A second part of the Yoneda's Lemma:
+\begin{lemma}
+  The universal element of a presheaf $\psh{P}$ at object $X$ is isomorphic to the natural isomorphism between the Yoneda embedding $\yo X$ and $\psh{P}$.
+  $$
+    \mathrm{UnivElt}~\psh{P}(X)~\cong~\mathrm{NatIso}~\yo X~\psh{P}
+  $$
+\end{lemma}
+
+This part of the lemma means that we can find the universal element if we know the natural isomorphism $i: \yo X \natiso \psh{P}$, namely $i_X(\id_X) : \psh{P}(X)$ is universal.
+
+\begin{proof}
+  Let $q: \psh{Q}(X)$ be an arbitrary element of $\psh{Q}$. We want to show that there exists a unique natural transformation $\yotrans{q} : \yo X \natrans \psh{Q}$ s.t. $\yotrans{q}_X(i_X(\id)) = q$.
+
+  We know that $i^{-1}(p) : (\yo X)(Y)$, namely $\cat{C}(Y, X)$, which can be composed with $q: \psh{Q}(X)$ so that we can define $\yotrans{q}_Y(p) := q \circ i^{-1}(p) : \psh{Q}(Y)$. Therefore the following holds:
+  $$
+    \yotrans{q}_Y(i(\id)) = q \circ i^{-1}(i(\id)) = q
+  $$
+  which is exactly what we want to show.
+\end{proof}
+
+What we've just shown hints to an elegant construction of the universal element from the natural isomorphism $i : \yo X \natiso \psh{P}$. For any presheaf $\psh{Q}$, we can construct the natural transformation $\alpha: \psh{P} \natrans \psh{Q}$ by composing $i^{-1}: \psh{P} \natrans \yo X$ and $\yotrans{q}: \yo X \natrans \psh{Q}$:
+$$
+\psh{P} \natiso \yo X \natrans \psh{Q}
+$$
+which concludes that universal elements are isomorphic to natural isomorphisms. From now on, we shall \textbf{define all universal properties in terms of natural isomorphisms $\mathrm{NatIso}~\yo X~\psh{P}$ with a clever choice of $\psh{P}$}.
+
+\section{Universal Properties, Revisited}
+
+All instances of universal properties that we've seen so far can be formulated in terms of the definition above.
+
+\subsection*{Terminal Object}
+
+A terminal object is an object $1$ s.t. for any object $X$, there exists a unique morphism $! : X \overset{\exists!}{\to} 1$. This definition can be rephrased as
+$$
+  X \overset{\exists!}{\to} 1~\cong~\mathrm{UnivElt}~\psh{P}(1)
+$$
+where $\psh{P} : \cat{C}^{op} \to \Set$ is the presheaf that sends every object to the singleton set (the 1-element set). Namely,
+$$
+\psh{P}(X) = \{*\}
+$$
+for all $X \in \cat{C}_0$. In fact, we should give $\psh{P}$ a name: $\mathrm{TermPsh}$.
+
+What does it mean to be a universal element of $\mathrm{TermPsh}$?
+\begin{itemize}
+  \item An element at the terminal object: $*: \mathrm{TermPsh}(1)$
+  \item The action of the element is $* \circ f = *$ for all $f: X \to 1$.
+  \item The element $*$ is universal, namely we can define a natural isomorphism $\yotrans{*}: \yo 1 \natrans \mathrm{TermPsh}$ s.t.
+  $$
+    \cat{C}(X, 1) \natiso \{*\}
+  $$
+  where $f \mapsto * \circ f$ for all $f: X \to 1$.
+\end{itemize}
+
+\subsection*{Product}
+
+Given two objects $A, B$ in $\cat{C}$, a product is an object $P$ s.t. for any object $C$ that has morphisms to $A$ and $B$, there exists a unique morphism $(f_1, f_2): C \to P$ s.t. the following diagram commutes:
+
+% https://q.uiver.app/#q=WzAsNCxbMCwxLCJBIl0sWzIsMSwiQiJdLFsxLDIsIkMiXSxbMSwwLCJQIl0sWzMsMCwiXFxwaV8xIiwyXSxbMywxLCJcXHBpXzIiXSxbMiwwLCJmXzEiXSxbMiwxLCJmXzIiLDJdLFsyLDMsIlxcZXhpc3RzISAoZl8xLCBmXzIpIiwxLHsic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoiZGFzaGVkIn19fV1d
+$$
+\begin{tikzcd}
+	& P \\
+	A && B \\
+	& C
+	\arrow["{\pi_1}"', from=1-2, to=2-1]
+	\arrow["{\pi_2}", from=1-2, to=2-3]
+	\arrow["{\exists! (f_1, f_2)}"{description}, dashed, from=3-2, to=1-2]
+	\arrow["{f_1}", from=3-2, to=2-1]
+	\arrow["{f_2}"', from=3-2, to=2-3]
+\end{tikzcd}
+~\cong~\mathrm{UnivElt}~\mathrm{ProdPsh}(A, B)(P)
+$$
+
+We want to show that all data in the diagram is completely determined by the universal element of $\mathrm{ProdPsh}(A, B)(P)$.
+
+First, we define the presheaf $\mathrm{ProdPsh}(A, B)$ as follows:
+\begin{itemize}
+  \item The element at $C \in \cat{C}_0$ is defined as $\mathrm{ProdPsh}(A, B)(C) := \cat{C}(C, A) \times \cat{C}(C, B)$.
+  \item The action $\circ_{\mathrm{ProdPsh}(A, B)}$ is defined as
+  \begin{mathpar}
+    \inferrule{
+      (f_1, f_2): \mathrm{ProdPsh}(A, B)(C) \\
+      g: \cat{C}(D, C)
+    }{
+      (f_1, f_2) \circ_{\mathrm{ProdPsh}(A, B)} g := (f_1 \circ g, f_2 \circ g)
+    }
+  \end{mathpar}
+\end{itemize}
+
+And then we define the universal element $\eta$ of $\mathrm{ProdPsh}(A, B)$ as follows:
+\begin{itemize}
+  \item $\eta: \mathrm{ProdPsh}(A, B)(P)$ is defined as $(\pi_1, \pi_2)$ where $\pi_1: \cat{C}(P, A)$ and $\pi_2: \cat{C}(P, B)$ are the projections out of the product $P$.
+  \item We can check that $\yotrans{\eta}: \yo P \natiso \mathrm{ProdPsh}(A, B)$ is a natural isomorphism, which means given $f: \cat{C}(C, P)$ for any object $C$, we send it through the natural isomorphism as $f \mapsto (\pi_1, \pi_2) \circ f$, which is exactly $f \mapsto (\pi_1 \circ f, \pi_2 \circ f)$. As a result, we can rewrite $f$ to be a pair $(f_1, f_2): \mathrm{ProdPsh}(A, B)(C)$.
+  \item Moreover, given $(f_1, f_2): \mathrm{ProdPsh}(A, B)(C)$, we can take the inverse of the natural isomorphism $\yotrans{\eta}^{-1}: \mathrm{ProdPsh}(A, B) \natiso \yo P$ to get a morphism $(f_1, f_2): \cat{C}(C, P)$. We can then conpress the fact that the diagram commutes into a single equation:
+  $$
+    (\pi_1 \circ (f_1, f_2), \pi_2 \circ (f_1, f_2)) = (f_1, f_2)
+  $$
+  which corresponds awfully well with the $\beta$-laws of the product.
+  \item Similarly, if we start with any object $C$ instead of fixing one, we can get the $\eta$-laws by saying that all morphisms from $C$ to $P$ are the same morphism.
+\end{itemize}
+We may also formulate the universal property in terms of the natural isomorphism. Taking product as an example, we have
+\begin{align*}
+  \cat{C}(C, P) &\cong \cat{C}(C, A) \times \cat{C}(C, B) \\
+  \yo P &\cong \mathrm{ProdPsh}(A, B)
+\end{align*}
+
+% Generically formulate universal properties.
+
+\subsection*{Initial Object}
+
+An initial object is an object $0$ s.t. for any object $X$, there exists a unique morphism $\text{¡} : 0 \overset{\exists!}{\to} X$.
+We may attempt to formulate the corresponding presheaf $\mathrm{EmpPsh}$ as
+$$
+\mathrm{EmpPsh}(X) := \varnothing
+$$
+
+However, there are presheaves that are not representable, and the empty presheaf is one of them, meaning that $\mathrm{EmpPsh}$ is not representable. Generally speaking, the right-hand universal properties like the terminal object and the products talk about maps into the object, defining morphisms into the object. But the initial object is a left-hand universal property that talks about maps out of the object.
+As a result, the initial object can only be defined by the terminal object on the opposite category.
+
+It's funny to think about what a presheaf $\psh{P}$ looks like when it's on an opposite category $\cat{C}^{op}$:
+$$
+\text{Presheaf on } \cat{C}^{op} \cong (\cat{C}^{op})^{op} \to \Set \cong \cat{C} \to \Set
+$$
+It's called a contravariant presheaf, and instead of defining the action $p \circ f$ for a presheaf, we define the action $f \circ p$ for a contravariant presheaf.
+
+As for the initial object in $\cat{C}$, we can just define it as the terminal object in $\cat{C}^{op}$, defined as $\mathrm{TermPsh}^{\cat{C}^{op}}$.
+
+\subsection*{Coproduct}
+
+Similarly, the coproduct can be defined as the product on the opposite category.
+$$
+\mathrm{CoprodPsh}(A, B)^{\cat{C}} \cong \mathrm{ProdPsh}^{\cat{C}^{op}}(A, B)
+$$
+
+And if we expand the definition we'll get:
+\begin{align*}
+\mathrm{ProdPsh}^{\cat{C}^{op}}(A, B)(C) :=&~\cat{C}^{op}(C, A) \times \cat{C}^{op}(C, B) \\
+=&~\cat{C}(A, C) \times \cat{C}(B, C)
+\end{align*}
+
+There is also the notion of a sum presheaf:
+$$
+\mathrm{SumPsh}(A, B)(C) := \cat{C}(C, A) + \cat{C}(C, B)
+$$
+But it's almost never representable.
+
+\subsection*{Exponential}
+
+Given two objects $A, B$, an exponential object $E$ satisfies
+
+% https://q.uiver.app/#q=WzAsMyxbMCwwLCJFIFxcdGltZXMgQSJdLFsyLDAsIkIiXSxbMCwyLCJaIFxcdGltZXMgQSJdLFsyLDAsIlxcZXhpc3RzISAoXFxsYW1iZGEgZlxcY2lyY1xccGlfMSwgXFxwaV8yKSIsMCx7InN0eWxlIjp7ImJvZHkiOnsibmFtZSI6ImRhc2hlZCJ9fX1dLFsyLDEsImYiLDJdLFswLDEsImFwcCJdXQ==
+$$
+\begin{tikzcd}
+	{E \times A} && B \\
+	\\
+	{Z \times A}
+	\arrow["app", from=1-1, to=1-3]
+	\arrow["{\exists! (\lambda f\circ\pi_1, \pi_2)}", dashed, from=3-1, to=1-1]
+	\arrow["f"', from=3-1, to=1-3]
+\end{tikzcd}
+~\cong~\mathrm{UnivElt}~\mathrm{ExpPsh}(A, B)(E)
+$$
+where $\mathrm{ExpPsh}(A, B)$ is defined as
+\begin{itemize}
+  \item Elements $\mathrm{ExpPsh}(A, B)(C) := \cat{C}(C \times A, B)$
+  \item Action
+    \begin{mathpar}
+      \inferrule{
+        f: \cat{C}(C \times A, B) \\
+        g: \cat{C}(D, C)
+      }{
+        f \circ_{\mathrm{ExpPsh}(A, B)} g : \cat{C}(D \times A, B)
+      }
+    \end{mathpar}
+    defined as $f \circ_{\mathrm{ExpPsh}(A, B)} g := f \circ (g \circ \pi_1, \pi_2)$.
+  \item ...and the action preserves the identity and composition.
+\end{itemize}
+
+Let's look at two more easier examples.
+
+\subsection*{Graph Coloring}
+
+Given a graph $G$, the $K\textrm{-coloring}(G)$ is a function
+$\chi: G.v \to [K]$ from vertices to a set of $K$ elements (colors), s.t. if vertices $g \sim h$ are adjacent, then $\chi(g) \neq \chi(h)$. Then an interesting question arises: Is the presheaf $\chi$ representable? (Is there a graph $G$ with a universal $K$-coloring?) That is to say, can we find a graph $\lceil K \rceil$ such that $\chi: K\textrm{-coloring}(\lceil K \rceil)$ is the universal $K$-coloring?
+$$
+G \overset{\varphi}{\longrightarrow} \lceil K \rceil \overset{\chi}{\longrightarrow} [K]
+$$
+
+In other words, can we find a graph $\lceil K \rceil$ such that for any graph $G$, the following natural isomorphism holds:
+$$
+\mathrm{GraphHom}(G, \lceil K \rceil) \cong K\textrm{-coloring}(G)
+$$
+
+The answer is we can define $\lceil K \rceil$ as a complete graph on $K$ vertices. All vertices are connected to each other, except for itself. In this way, each vertex represents a unique color, and all colors can only have neighbors of different colors. Defining the graph homomorphism from $G$ to $\lceil K \rceil$ is then the same as defining a color-assignment function.
+
+\subsection*{Subobject Classifier}
+
+Revisiting the Powerset Functor $\pow : \Set^{op} \natrans \Set$.
+The element $\pow(X)$ is the powerset of $X$.
+Given $f: X \to Y$, we can define $f^{-1}: \pow(Y) \to \pow(X)$ as
+$$
+f^{-1}(S) := \{ x \in X \mid f(x) \in S \}
+$$
+
+Then what would the universal element of $\pow$ be? Suppose we call it $\eta: \pow(A)$, and it being universal means functions $X \to A$ should be isomorphic to the subsets of $X$:
+$$
+  X \to A \cong \pow(X)
+$$
+
+The only choice of $A$ that satisfies this is $A = 2$, the two-element set $\{0, 1\}$. We can conclude that $X \to 2~\cong~\pow(X)$, namely $\yo 2~\cong~\pow$.
+
+If we name the universal element $\eta: \pow(2)$, then the natural isomorphism $\yotrans{\eta}: (X \to 2) \natiso \pow(X)$ is defined as
+$$
+  \yotrans{\eta}_X(f) := \{ x \mid f(x) = 1 \}
+$$
+where $f(x) = 1$ means $f(x) \in \{1\}$.
+
+This universal property in topos theory is called ``Subobject Classifier'', a generalization of the predicate to arbitrary categories.
+
+\subsection{Universal Properties are Essentially Unique}
+
+Finally, we prove one more theorem about universal properties: they are unique up to unique isomorphism. We approach this theorem in two steps.
+
+First, we ask: is $\yo : \cat{C} \to \mathrm{Psh}(\cat{C})$ a functor? We've been defining how $\yo$ acts at objects. Now at least we can extend this operation to be a functor by defining how $\yo$ acts at morphisms.
+
+Given $f: X \to Y$, we can define $\yo f : \yo X \natrans \yo Y$ as follows:
+\begin{align*}
+  &(\yo f)_Z (g: \yo(X)(Z)) : \yo(Y)(Z) \\
+  &(\yo f)_Z (g) := f \circ g
+\end{align*}
+which can be concluded by $\yo f = f \circ -$.
+
+But to complete our goal of showing that $\yo$ is functorial ($\yo$ is a functor), we need to show that firstly, $\yo f$ is natural in the choice of $g$ (since morphisms of a functor $\yo$ are natural transformations); secondly, $\yo f$ preserves the identity and composition.
+
+The naturality of $\yo f$:
+\begin{align*}
+  f \circ (g \circ h) = (\yo f)_Z (g \circ h) &= ((\yo f)_Z (g)) \circ h = (f \circ g) \circ h
+\end{align*}
+
+$\yo f$ preserves the identity and composition
+\begin{align*}
+  (\yo \id) (g) &= \id \circ g = g \\
+  (f \circ g) \circ h = (\yo (f \circ g)) (h) &= (\yo f) ((\yo g)(h)) = f \circ (g \circ h)
+\end{align*}
+
+Now that we've established that $\yo$ is a functor, the second step is to show that:
+\begin{theorem}
+  $\yo$ is fully faithful.
+\end{theorem}
+
+% \begin{align*}
+%   \yo f : \yo X \to \yo Y \cong \yo (Y) (X) \cong \cat{C}(X, Y)
+% \end{align*}
+
+\end{document}
