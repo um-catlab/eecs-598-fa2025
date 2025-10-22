@@ -52,7 +52,7 @@ Schedule:
 | Wed, Oct 22  |A Bandukwala|
 | Mon, Oct 27  |Jesse Slater|
 | Wed, Oct 29  | Ivan Wei   |
-| Mon, Nov 03  |            |
+| Mon, Nov 03  |Yuchen Jiang|
 | Wed, Nov 05  |  Eric Bond |
 | Mon, Nov 10  |   Ayan C   |
 | Wed, Nov 12  |            |
