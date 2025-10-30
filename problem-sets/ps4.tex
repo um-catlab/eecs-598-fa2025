@@ -84,10 +84,12 @@
 
 \title{Problem Set 4}
 \date{Released: October 9, 2025\\
-  %% Updated ??
+  Updated Octover 22, 2025\\
   Due: October 23, 2025, 11:59pm
 }
 \maketitle
+
+\textbf{Update}: Fixed typo in problem 2 part 1 and provide definition of composition of functors of SCwFs.
 
 Submit your solutions to this homework on Canvas alone or in a group of 2.
 Your solutions must be submitted in pdf produced using LaTeX.
@@ -142,6 +144,14 @@ Your solutions must be submitted in pdf produced using LaTeX.
     preserves function types if for every $A,B \in S_t$, that the
     induced natural transformation $\Tm_{\cat T}(F_t(A \Rightarrow B)) \to
     \Tm_{\cat T}(F_tA \Rightarrow F_tB)$ is an isomorphism.
+  \item Given functors of SCwFs $F : \cat S \to \cat T$ and $G : \cat
+    T \to \cat U$, their composition $G \circ F : \cat S \to \cat U$
+    is defined as follows:
+    \begin{enumerate}
+    \item $(G \circ F)_c = G_c \circ F_c$
+    \item $(G \circ F)_{t} = G_t \circ F_t$
+    \item $(G \circ F)_{\Tm}(M) = G_{\Tm}(F_{\Tm}(M))$, which can be verified to satisfy naturality.
+    \end{enumerate}
   \end{enumerate}
 \end{definition}
 
@@ -189,8 +199,8 @@ semantics.
   Part 3 is quite difficult, so you may wish to finish the other parts
   of the construction before returning to it.
   \begin{enumerate}
-  \item Show that if $F : \cat S \to \cat T$ and $G : \cat S \to \cat
-    T$ are SCwF functors, and $G \circ F$ is faithful, then $F$ is
+  \item Show that if $F : \cat S \to \cat T$ and $G : \cat T \to \cat
+    U$ are SCwF functors, and $G \circ F$ is faithful, then $F$ is
     faithful.
   \item Show that if $F, F' : \cat S \to \cat T$ are SCwF functors and
     $\alpha : F_c \cong F'_c$ is a natural isomorphism then $F$ is
@@ -200,14 +210,14 @@ semantics.
     construction of exponentials is a direct generalization of the
     Heyting implication structure on downward closed sets in PS1).
   \item Define for any SCwF $\cat S$, a SCwF functor $Y : \cat S \to
-    \textrm{democratic}(\mathcal P\cat S_c)$ that is faithful and
+    \textrm{democratic}(\mathcal P\cat {S}_c)$ that is faithful and
     preserves unit and product types.
   \item Define a SCwF functor $i : \stlccart(\Sigma) \to
     \stlcccc(\Sigma)$ that sends base types/function symbols to
     themselves and preserves product and unit types.
   \item Define a SCwF functor $j : \stlcccc(\Sigma) \to
-    \textrm{democratic}(\mathcal P\cat {S_c})$ that agrees with $Y :
-    \stlccart(\Sigma) \to \textrm{democratic}(\mathcal P\cat {S_c})$
+    \textrm{democratic}(\mathcal P\cat {S}_c)$ that agrees with $Y :
+    \stlccart(\Sigma) \to \textrm{democratic}(\mathcal P\cat {S}_c)$
     on base types/function symbols and preserves product and unit
     types.
 
