@@ -55,8 +55,8 @@ Schedule:
 | Mon, Nov 03  |Yuchen Jiang|
 | Wed, Nov 05  |  Eric Bond |
 | Mon, Nov 10  |   Ayan C   |
-| Wed, Nov 12  |            |
-| Mon, Nov 17  |            |
+| Wed, Nov 12  |Chris Davis |
+| Mon, Nov 17  |Chris Davis |
 | Wed, Nov 19  |            |
 | Wed, Nov 20  |            |
 | Mon, Nov 24  |            |
