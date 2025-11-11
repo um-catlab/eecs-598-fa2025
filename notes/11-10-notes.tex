@@ -1,0 +1,241 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\B}{\mathbb{B}}
+\newcommand*{\mtset}{\ensuremath{\varnothing}}
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\textrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\textrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+\newcommand{\lfpt}{\Sigma_{\textrm{lfpt}}}
+\newcommand{\Set}{\textrm{Set}}
+\newcommand{\id}{\textrm{id}}
+\newcommand{\cat}{\mathcal}
+\DeclareMathOperator{\Maybe}{Maybe}
+\DeclareMathOperator{\STLC}{STLC}
+\DeclareMathOperator{\Alg}{Alg}
+
+\usepackage{stmaryrd}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\semant}[1]{\llbracket #1 \rrbracket}
+
+\DeclareMathOperator{\IPL}{IPL}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\setlength{\headheight}{15pt}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+\usepackage[parfill]{parskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 21: Adjunctions, Algebras of a Monad}
+\author{Lecturer: Max S. New\\ Scribe: Ayan Chowdhury}
+\date{November 11, 2025}
+\maketitle
+
+Recall that our model for call by value semantics is a BiCartesian Closed Category $\cat C$ with a strong monad $T$ with some of the interpretations being:
+\begin{align*}
+    \Gamma, A \text{ (contexts and types)} & \to \cat C_0 \\
+    \Gamma \vdash M : A & \to \cat C(\Gamma, TA) \\
+    \Gamma \vdash M : A \text{ for $M$ a value} & \to \cat C(\Gamma, A)
+\end{align*}
+where the value semantics and usual semantics align when $M$ is a value (that is $\semant{M} = \eta(\semant{M}^{V})$).
+
+
+One concrete example of Call-By-Value semantics is the category of sets with the Maybe monad, $\Maybe A = A \uplus 1$. This lets us model crashing or uncatchable errors in our language. Let us consider how to model these semantics in Call-By-Name.
+
+\section{Call By Name}
+Let us first define our semantics concretely for the Maybe monad. We give the following interpretations:
+\begin{align*}
+    \Gamma, A \text{ (contexts and types)} & \to \text{Pointed Sets} \\
+    \Gamma \vdash M : A & \to f: \abs{\Gamma} \to \abs{A}
+\end{align*}
+Where $\abs{P}$ for a pointed set $P$ denotes the underlying set. The intution for these interpretations is the base points provides the semantics for failing (or the program crashing). Note however that the function $f$ is a function of underlying sets, and not a base-point preserving function. We interpret products in the following way:
+\begin{align*}
+   \semant{A \times B} & = \semant{A} \times \semant{B}
+\end{align*}
+taking products in the category of pointed sets. We interpret a context $\Gamma$ in the same way. The interpretation of the termianl object is given by 
+\[
+    \semant{1} = 1
+\]
+where $1$ is taken to be the unit in the category of pointed sets (a set with just a base point and no other elements).
+
+We also impose that for $\Gamma \vdash M : A$ when $M$ is strict in $x$ we have the function associated with the term $M$ preserves the base point associated with $x$. This follows our intution, as if $M$ is strict in $x$ in Call-By-Name semanatics, then if $x$ results in a crash, then our program will crash. Similarly, as we are strict in $x$, we map the error result, being the basepoint of $x$, to the error result of $M$.
+
+This motivates the reason the function associated with $\Gamma \vdash M : A$ need not be base point preserving. We could return a non-error output even when all inputs are errors. It follows that 
+\[
+    \semant{A \Rightarrow B} = \{ \text{all (not necessarily basepoint preserving) functions $\abs{\semant{A}} \to \semant{B}$ } \}
+\]
+The basepoint of this set of functions is the constant function which always returns the basepoint of $B$.
+
+Consider the interpretation of $0$. The empty set is not pointed, and thus cannot be the interpretation of $0$. Instead we take 
+\[
+    \semant{0} = (\mtset)_*
+\]
+where $(A)_*$ for any set $A$ denotes freely adjoining a basepoint. Formally $(A)_* = A \uplus \{*\}$. Note that in our model it holds $\semant{0} \cong \semant{1}$.
+
+The interpretion of sums is given by 
+\[
+    \semant{A + B} = (\abs{\semant{A}} \uplus \abs{\semant{B}})_*
+\]
+We can observe that the semantics of $\cdot \vdash M : 1 + 1$ is just a function from $\{*\}$ to a three element set in both Call-By-Name and Call-By-Value.
+
+While seemingly different, both Call-By-Name and Call-By-Value can be treated as arising from a monad $T$. We have this directly for the interpretations for Call-By-Name. For Call-By-Value we consider Algebras of Monads.
+
+\section{Algebra Of A Monad}
+
+An algebra of a Monad $T$ over a category $\cat C$ consists of 
+\begin{itemize}
+    \item A ``Carrier'' $A \in \cat C$.
+    \item An ``Algebra'' $\alpha: TA \to T$
+\end{itemize}
+such that the following diagrams commute:
+\[\begin{tikzcd}
+	A && TA && {T^2A} && TA \\
+	\\
+	&& A && TA && \bullet
+	\arrow["\eta", from=1-1, to=1-3]
+	\arrow["\id"', from=1-1, to=3-3]
+	\arrow["\alpha", from=1-3, to=3-3]
+	\arrow["\mu"', from=1-5, to=1-7]
+	\arrow["\alpha", from=1-5, to=3-5]
+	\arrow["\alpha"', from=1-7, to=3-7]
+	\arrow["\alpha", from=3-5, to=3-7]
+\end{tikzcd}\]
+
+As an example we have that an Algebra of the $\Maybe$ monad is a pointed set. We have from our first diagram that $\alpha: A \uplus \{\text{err}\}$ maps $A$ to $A$ via the identity. It follows that $\alpha$ is uniquely defined by where $\alpha$ sends $\text{err}$, so $\alpha$ exactly gives the data of a pointed set. This lets us redfine our semantics of Call-By-Name with the Maybe monad using algebras of the Maybe monad explicitly. 
+
+However, rather than defining pointed sets as being an algebra of a Monad, we can study algebraic structures directly and see how we can derive a monad from such structures. 
+
+\section{Abstract Algebra}
+
+We define an Algebraic Theory to be an $\STLC$-signature (where we take $\STLC$ to have no connectives) consisting of
+\begin{itemize}
+    \item One base type $X$
+    \item Operations of the form $\text{op}: X^n \to X$
+    \item Axioms denoting relations between our operations
+\end{itemize}
+
+For example we can consider the theory of monoids given by a base type $X$, the operations multplication, $m: X, X \to X$ and identity, $e: \cdot \to X$, and the axioms 
+\[
+    X \vdash m(x, e)
+    \quad\quad
+    X \vdash m(e, x)
+    \quad\quad
+    X, Y, Z \vdash m(x, m(y, z)) = m(m(x, y), z) 
+\]
+
+For a algebraic theory $\Sigma$ we define a $\Sigma$-algebra to be an interpretation of $\Sigma$ in $\Set$. We then have that an algebra in our theory of monoids is exactly a monoid.
+
+Many of our computation effects arise from algebraic theories. We could consider the following examples:
+
+\begin{itemize}
+    \item Pointed set is an algebraic structure with just one operation, $\text{crash}: \cdot \to X$.
+    \item Printing strings in the alphabet $A^*$ is given by an operation $\text{print}_a: X \to X$ for all $a \in A^*$.
+    \item Logging with a monoid $W$ can be given by an operation $\text{act}_w: X \to X$ for all $w \in W$ satisfying $\text{act}_w(\text{act}_{w'}(x)) = \text{act}_{ww'}(x)$ and $\text{act}_e(x) = x$.
+    \item Idempotent commutative monoid is a monoid such that $m(x, x) = x$ and $m(x, y) = m(y, x)$ and it gives a theory of finitary non-determinism.
+    \item We can define the theory of state given a finite set of states $S$ by defining operations $\text{put}_s: X \to X$ for all $s \in S$ and $\text{get}: X^{S} \to X$ satisfying 
+    \[
+        \text{put}_s(\text{get}(x_0, \cdots)) = \text{put}_s(x_s)
+        \quad\quad
+        \text{put}_s(\text{put}_{s'}(x)) = \text{put}_{s'}(x)
+    \]
+    \[
+        \text{get}(\text{put}_{s_0}(x_0), \text{put}_{s_1}(x_1), \cdots) = \text{get}(x_0, x_1, \cdots)
+    \]
+    \[
+        \text{get}(\text{get}(x_{0, 0}, x_{0, 1}, \cdots), \text{get}(x_{1, 0}, x_{1, 1}, \cdots), \cdots) = \text{get}(x_{0, 0}, x_{1, 1}, \cdots)
+    \]
+\end{itemize}
+
+\section{Category of Algebras}
+
+We can consider $\Sigma$-algebras to form a category. Given algebras $(\alpha, X)$ and $(\beta, Y)$ we can define a homomorphism $\varphi: (\alpha, X) \to (\beta, Y)$ where $\varphi$ maps $X$ to $Y$ such that for all opereations $\text{op}$ we have 
+\[
+    \varphi(\alpha_{\text{op}}(x_1, \cdots)) = 
+    \beta_\text{op}(\varphi(x_1), \cdots)
+\]
+There then exists a functor $U$ from $\Alg(\Sigma) \to \Set$ by mapping an algebra to its underlying set, and mapping a morphism to the underlying function (note that this is a forgetful functor). With this we can define the $\text{Cokleisli}$ category given by 
+\[
+    (\text{Cokleisli} \, \Sigma)_0 = \Alg(\Sigma)
+\]
+\[
+    (\text{Cokleisli} \, \Sigma)((X, \alpha), (Y, \beta)) = \Set(X, Y)
+\]
+
+Taking $U$, we can go from $\Alg(\Sigma)$ to $\Set$. If we are also given a monad $T$, we can then generate a free algebra from $\Set$. 
+
+\section{Free Algebras}
+
+We have the following universal property. For all sets $A$, and given algebras $(X, \alpha)$ we have that 
+\[
+    \Set(A, U(X, \alpha)) \cong \Alg(FA, X)
+\]
+where $FA$ denotes the free algebra. Intuitively we have that defining a homomorphism out of a free-algebraic structure of $A$ is equivalent to defining a function from $A$.
+
+We can explicitly construct 
+\[
+    \abs{FA} : [\left\{
+        \begin{array}{@{}l@{}}
+            \cdot \vdash M : X \text{ generated by } \Sigma \text{ extended with }\\
+            \quad\quad\quad\,\, \text{  operations }   : \cdot \to X \text{ for all } a \in A
+        \end{array}
+    \right\}]
+\]
+where the brackets denotes equivalence classes up to equality from our axioms. Then for an operation $\text{op}: X^n \to X$ we can define 
+\[
+    \text{op}_{FA}([M_1], \cdots, [M_n]) = [\text{op}(M_1, \cdots, M_n)]
+\]
+However, note that such a definition of a free-algebra is very syntactic and not nice in general for proving theorems we want out of them. However, we can more explicitly construct free algebras given a particular theory. 
+
+For example, it holds that the free-algebra on $A$ for monoids is the set of finite lists on $A$, where multplication is given by concatenation, and the identity corresponds to the empty list. We can similarly define free-algebra structures on all of the algebraic theories we had defined previously which give rise to computational effects.
+
+
+\end{document}
