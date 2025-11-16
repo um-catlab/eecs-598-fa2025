@@ -18,7 +18,7 @@ Everyone taking the class (including auditors) must present once.
 | PS2         | Jesse Slater|             |
 | PS3         |   Ayan C    |             |
 | PS4         | Chris Davis |             |
-| PS5         |             |             |
+| PS5         | Conner Rose |             |
 | PS6         |             |             |
 
 ## Scribed Notes Signup
@@ -57,9 +57,8 @@ Schedule:
 | Mon, Nov 10  |   Ayan C   |
 | Wed, Nov 12  |Chris Davis |
 | Mon, Nov 17  |Chris Davis |
-| Wed, Nov 19  |            |
-| Wed, Nov 20  |            |
-| Mon, Nov 24  |            |
+| Wed, Nov 19  |Conner Rose |
+| Mon, Nov 24  |Conner Rose |
 | Mon, Dec 01  |A Bandukwala|
 | Wed, Dec 03  |            |
 | Mon, Dec 08  |            |
