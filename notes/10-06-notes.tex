@@ -1,0 +1,253 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\eval}{\mathrm{eval}}
+\newcommand{\Yon}{\mathrm{Yoneda }}
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\dem}{\mathrm{dem}}
+\newcommand{\cont}{\mathrm{Cont}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 12: Initiality of STLC}
+\author{Lecturer: Max S. New\\
+  Scribe: Conner Rose}
+\date{October 6, 2025}
+\maketitle
+
+Things we need to remember about presheafs:
+
+\begin{enumerate}
+  \item A presheaf is a functor $P : \mathcal{C}^{\op} \to \mathrm{Set}$
+  \item A presheaf \emph{is} a universal property
+  \item An object $x \in \mathcal{C}$ ``has'' the universal property $P$ if
+        \[
+          \Yon x \cong P
+        \]
+  \item Equivalently, given a universal element $\eta : P(x)$, then
+        $\eta \circ_{p} - : \Yon x \to P$ is a natural isomorphism
+\end{enumerate}
+
+\section{Weak Initiality of IPL($\Sigma$)}
+
+\begin{enumerate}
+  \item IPL($\Sigma$) form a biHeyting (pre)algebra, ``tautological
+        interpretation'' is self of $\Sigma$ in IPL($\Sigma$).
+  \item For all interpretations $\sigma$ in a biHeyting prealgebra $P$,
+        \begin{enumerate}
+          \item $[\![\cdot]\!] : \text{IPL}(\Sigma) \to P$
+                \begin{enumerate}
+                  \item monotone
+                  \item preserves biHeyting algebra structure; sends meets to meets, joins to joins, etc.
+                  \item preserves the interpretation
+                \end{enumerate}
+          \item We have a unique such function (up to $\leq, \geq$)
+        \end{enumerate}
+\end{enumerate}
+
+% syntax | sound + complete model | typical model
+% STLC(0, +, 1 x, =>) | simple category w/ families +(0, +, 1, x, =>) | biCartesian Closed Category
+% STLC($\emptyset$) | Simple category w/ families | Cartesian Categories
+% STLC(1, x, =>) | SCwF(1, x, =>) | Cartesian Closed Category
+% STLC(0, +, 1, x) | SCwF(0, +, 1, x) | Distributive biCartesian Category
+
+\begin{tabular}{|l|l|l|}
+  \hline
+  \textbf{Syntax}                   & \textbf{Sound \& Complete Model}  & \textbf{Typical Model}            \\
+  \hline
+  STLC($0, +, 1, \times, \implies$) & SCwF($0, +, 1, \times, \implies$) & BiCartesian Closed Category       \\
+  \hline
+  STLC($\emptyset$)                 & SCwF                              & Cartesian Categories              \\
+  \hline
+  STLC($1, \times, \implies$)       & SCwF($1, \times, \implies$)       & Cartesian Closed Category         \\
+  \hline
+  STLC($0, +, 1, \times$)           & SCwF($0, +, 1, \times$)           & Distributive BiCartesian Category \\
+  \hline
+  STLC($1, \times$)                 & SCwF($1, \times$)                 & Cartesian Categories              \\
+  \hline
+\end{tabular}
+
+\begin{definition}[biCartesian closed cateogry]
+  A biCartesian closed cateogry is a category $\mathcal{C}$ with
+  $\forall A, B \in \mathcal{C}$ we have
+  \begin{itemize}
+    \item a coproduct, $A + B$, along with inclusion maps $\sigma_1, \sigma_2$
+    \item a product $A \times B$, along with projection maps $\pi_1, \pi_2$
+    \item exponentials $A \implies B$, along with an evaluation map, $\eval : B^A \times A \to B$
+  \end{itemize}
+  Initial and terminal objects 1, 0.
+  \begin{itemize}
+    \item Cartesian: 1, $A \times B$
+    \item coCartesian: 0, $A + B$
+    \item Cartesian closed: 1, $A \times B, A \implies B$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Distributive coproducts, initial objects]
+  Let $\mathcal{C}$ be a Cartesian category. A coproduct $A \times B$ in
+  $\mathcal{C}$ is distributive when $\forall C$, we have
+  \[
+    (A + B) \times C \xleftarrow{\sim} (A \times C) + (B \times C)
+  \]
+  as an isomorphism.
+  An initial object is given when
+  \[
+    0 \times C \xleftarrow{\sim} 0
+  \]
+  is an isomorphism.
+\end{definition}
+
+Coproduct is a ``left-handed'' universal property, meaning it's easy to map
+\emph{out} of it. We can simply handle cases.
+
+\begin{theorem}
+  Every biCartesian closed category is distributive.
+\end{theorem}
+\begin{proof}
+  First, let's show that $0 \times C \xleftarrow{\sim} 0$ is an isomorphism.
+  The Yoneda embedding is fully-faithful, so, it suffices to show that
+  $\Yon^\text{op}(0 \times C) \xleftarrow{\sim} \Yon^\text{op} 0$.
+  For all $X \in \mathcal{C}$, we have
+  \begin{align*}
+    \mathcal{C}(0 \times C, X) & \cong  \mathcal{C}(0, X^C) \\
+                               & \cong  1                   \\
+                               & \cong  \mathcal{C}(0, X)   \\
+  \end{align*}
+  Now, to show that $(A + B) \times C \xleftarrow{\sim} (A \times C) + (B \times C)$
+  an isomorphism, we have
+  \begin{align*}
+    \mathcal{C}((A + B) \times C, X) & \cong \mathcal{C}(A + B, X^C)                                      \\
+                                     & \cong \mathcal{C}(A, X^C) \times \mathcal{C}(B, X^C)               \\
+                                     & \cong \mathcal{C}(A \times C, X) \times \mathcal{C}(B \times C, X) \\
+                                     & \cong \mathcal{C}((A \times C) + (B \times C), X)
+  \end{align*}
+\end{proof}
+\begin{definition}[Simple Category with Families]
+  A simple category with families (SCwF), $S$ consists of
+  \begin{enumerate}
+    \item A set $S_t$ of ``types''
+    \item A category $S_C$ of ``contexts and substitutions''
+    \item For every $A \in S_t$, we have a ``presheaf of terms'', $\tm(A)$ on $S_C$
+    \item $S_C$ has a terminal object $\bullet \in S_C$
+    \item $\forall \Gamma \in S_C, A \in S_t$, we have a ``product context'',
+          $\Gamma \times A$ such that $\text{Yoneda}(\Gamma \times A) \cong \text{Yoneda }\Gamma \times Tm(A)$.
+          I.e., $S_C(\Delta, \Gamma \times A) \cong S_C(\Delta, \Gamma) \times \tm(A)\Delta$.
+  \end{enumerate}
+\end{definition}
+Let us define a SCwF called STLC($\Sigma$)($\dots (\text{connectives})$)
+\begin{enumerate}
+  \item Types are types of STLC
+  \item Contexts are (syntactic) contexts $\Gamma$. As in PS2,
+        for $\gamma : \Delta \to \Gamma$, and
+        $\forall(x : A) \in \Gamma$, we have $\Delta \vdash \gamma(x) : A$.
+  \item $\tm(A)(\Gamma) := \{ M \mid \Gamma \vdash M : A\}$,
+        for $M \in \tm(A)(\Gamma)$ and $\gamma : \Delta \to \Gamma$, we have presheaf action
+        $M \circ \gamma := M[\gamma]$
+  \item We have the terminal context $\Gamma \to \bullet \cong 1$.
+  \item Let $\Gamma, A$. We want to construct a context, $\Gamma \times A$, such that
+        $(\Delta \to \Gamma \times A) \cong (\Delta \to \Gamma) \times (\Delta \vdash \bullet : A)$.
+        We can define $\Gamma \times A := \Gamma, x \in A$ be extending $\Gamma$ with a free
+        variable of the type $A$. Given $\gamma : \Delta \to \Gamma$ and $\Delta \vdash M : A$,
+        we have $\gamma, M / x : \Delta \to \Gamma, x \in A$.
+\end{enumerate}
+
+Let $\mathcal{C}$ be a Cartesian category. We will define a SCwF called
+$\dem(\mathcal{C})$.
+\begin{enumerate}
+  \item Types are objects of $\mathcal{C}$
+  \item $\dem(\mathcal{C})_C := \mathcal{C}$
+  \item $\forall A \in C_0$ we have $\dem(\tm(A)) = \Yon(A) : Psh(\mathcal{C})$
+  \item Terminal object, free
+  \item $\Gamma \times A$, free
+\end{enumerate}
+
+Fix a SCwF $S$.
+\begin{enumerate}
+  \item For $A, B \in S_t$, we define a product type $A \times B \in S_t$
+        with $\tm_S(A \times B) \cong \tm_S A \times \tm_S B$.
+        I.e., $\forall \Gamma$, we have $\tm_S(A \times B)(\Gamma) \cong (\tm_S A)(\Gamma) \times(\tm_S B)(\Gamma)$
+\end{enumerate}
+\begin{theorem}
+  $\dem(\mathcal{C})$ always has product types $A \times B$, which are simply given by their product
+  in $\mathcal{C}$.
+\end{theorem}
+\begin{theorem}
+  STLC($\cdots$, $\times$) has products
+  \[
+    \Gamma \vdash \bullet : A \times B \cong (\Gamma \vdash \bullet : A) \times (\Gamma \vdash \bullet : B)
+  \]
+  Right to left corresponds to the product introduction rule, i.e., $(M, N)[\gamma] = (M[\gamma], N[\gamma])$.
+  Left to right corresponds to the product elimination rules, i.e., $(\pi_i
+    M)[\gamma] = \pi_i(M[\gamma])$.
+
+  A unit type in $S$ is a type $1 \in S_t$. We have
+  \begin{align*}
+    \tm 1           & \cong 1     \\
+    (\tm 1)(\Gamma) & \cong \{+\}
+  \end{align*}
+
+  A function type $A \Rightarrow B \in S$, we have $\tm(A \Rightarrow B)(\Gamma)
+    \cong \tm(B)(\Gamma \times A)$
+\end{theorem}
+\begin{theorem}
+  If STLC has function types in the syntactic sense then SCwF STLC has function
+  types in the semantic sense. I.e., $(Mx)[\gamma, x/x] = M[\gamma]x$
+\end{theorem}
+In a SCwF $S$ with types $A, C$, we have a ``continuation presheaf'', $\cont A B$ on $S_c$
+with $(\cont A B)(\Gamma) := (\tm B)(\Gamma \times A)$.
+We have an ``empty type''' 0 in a SCwF is a type $0 \in S_t$ with $(\cont 0 C) \cong 1$
+for all $C \in \mathcal{S_t}$.
+For $A, B \in S_t$, we have a ``sum type''' $A + B \in S_t$ such that for all $C \in S_t$, we have
+$\cont(A + B)C \cong \cont AC \times \cont BC$
+
+For $\dem(\mathcal{C})$, having an empty type is equivalent to having a
+distributive initial object. For all $C \in S_t$, we have $\cont 0 C \cong 1$,
+so for all $\Gamma, C$ we have $\mathcal{C}(\Gamma \times 0, C) \cong 1 \cong
+  \mathcal{C}(0, C)$, so $\Gamma \times 0 \cong 0$. Similarly, sum types
+correspond to a distributive coproduct.
+\end{document}
