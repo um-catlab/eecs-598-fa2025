@@ -1,0 +1,227 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Thunk}{\mathrm{Thunk}}
+\newcommand{\Ret}{\mathrm{Ret}}
+\newcommand{\ret}{\mathrm{ret}}
+\newcommand{\Let}{\mathrm{let}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\case}{\mathrm{case}}
+\newcommand{\Put}{\mathrm{put}}
+\newcommand{\Get}{\mathrm{get}}
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\TAlg}{T\text{-Alg}}
+\newcommand{\crash}{\mathrm{crash}}
+\newcommand{\fix}{\mathrm{fix}}
+\newcommand{\while}{\mathrm{while}}
+\newcommand{\Loop}{\mathrm{loop}}
+\newcommand{\Kl}{\mathrm{Kl}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\cat}[1]{\mathcal{#1}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 25: Recursion}
+\author{Lecturer: Max S. New\\
+  Scribe: Conner Rose}
+\date{November 24, 2025}
+\maketitle
+
+\section{Recap}
+We've talked about inductive and co-inductive data types twice already:
+\begin{itemize}
+  \item Lawvere's fixed point theorem tells us the limitations of recursive
+        types. For a surjection $A \to B^A$ in a cartesian closed category, if
+        it is a retract (has a section), then every endomorphism $f : B \to B$
+        has a fixed point. This is part of how we proved that set-theoretic
+        semantics of lambda calculus is not complete, which we'll continue to
+        talk about. This tells us we need to move beyond set theory in a certain
+        sense.
+  \item Initial algebra/terminal co-algebra semantics of types. We want to keep
+        our nice set-theoretic semantics. We can have recursive definitions but only
+        ``well-founded'' ones, for instance a tree.
+\end{itemize}
+
+\section{General Recursion}
+We need to model two things: recursive programs/functions and recursive types.
+Some examples:
+\begin{itemize}
+  \item Recursive programs: while loops, arbitrary recursive function definitions
+  \item Recursive types: trees, circular definitions ($D = D \to D$)
+\end{itemize}
+We'll focus on recursive programs today.
+
+\subsection{Trace Semantics}
+
+A ``trace'' on a Cartesian category $\cat{C}$ is effectively an operation that
+allows us to define morphisms that are recursive. We'll denote this operation
+by $\dagger$. Formally, we have $(-)^\dagger : \cat{C}(A \times X, X) \to
+  \cat{C}(A, X)$. We have a few equations:
+\begin{enumerate}
+  \item Naturality in $A$: If we have $g : B \to A, f : A \times X \to X$, then
+        \[
+          (f \circ (g \circ X))^\dagger = f^\dagger \circ g
+        \]
+  \item ``Dinaturality'' in $X$: If we have $g : A \times Y \to X, f : A \times
+          X \to Y$, then we want to get a fixed point where we get out a morphism
+        $A \to X$. We have
+        \[
+          (g \circ (\pi_1, f))^\dagger = (g \circ (\pi_1, f \circ (\pi_1, g)))^\dagger
+        \]
+  \item ``Diagonal'' property: If we have $f : (A \times X) \times X \to X$,
+        then
+        \[
+          (f^\dagger)^\dagger = (f \circ (\pi_1, \pi_2, \pi_2))^\dagger
+        \]
+
+\end{enumerate}
+\subsubsection{Recursive Computations}
+
+In call by push value, we can add recursive computation types. The $A$ in this
+case is the context $\Gamma$ and the $X$ is $\Thunk B$ for some computation
+$B$. To define a recursive closure, we have
+\[
+  \inferrule{\Gamma, t : \Thunk B \vdash V : \Thunk B}
+  {\Gamma \vdash \fix t . V : \Thunk B}
+\]
+To define a recursive computation of type $B$, then we have
+\[
+  \inferrule{\Gamma, t : \Thunk B \vdash M : B}
+  {\Gamma \vdash \fix t . M :  B}
+\]
+We can further simplify by saying,
+\[
+  \inferrule{\Gamma \vdash M : \Thunk B \to B}{\Gamma \vdash \fix M : B}
+\]
+In this syntax, we have the following rules:
+\begin{enumerate}
+  \item Substitution: $(\fix M)[\gamma] = \fix (M[\gamma])$
+  \item A kinda-$\beta$-rule: If we have $\Gamma \vdash M : \Thunk B \to B^\prime$ and
+        $\Gamma \vdash N : \Thunk B^\prime \to B$, then we can unfold a fixed point,
+        i.e.,
+        \[
+          \fix(\lambda t = \Thunk B . N \{ M t\}) = N \{\fix \lambda t^\prime . M\{N t\}\}
+        \]
+        As a special case, we have $\fix M = M \{\fix M\}$.
+  \item A kind-$\eta$-rule: For $M = \Thunk B \to Thunk B \to B$, we have
+        \[
+          \fix \lambda t_1 = \Thunk B . \fix \lambda t_2 = \Thunk B. M t_1 t_2
+          = \fix \lambda t. M t t
+        \]
+\end{enumerate}
+If instead we take the opposite of our Kleisli category, we have
+\[
+  \Kl (X, A + X) \to \Kl(X, A)
+\]
+Consider $X$ and $A$ to be value types. We have
+\[
+  \inferrule{\Gamma \vdash M : X \to \Ret (A + X)}{\Gamma \vdash \while M : X \to \Ret A}
+\]
+We have rules
+\begin{enumerate}
+  \item Naturality in $\Gamma$: $(\while M)[\gamma] = \while(M[\gamma])$
+  \item Naturality in $A$: If we have $M : X \to \Ret(A + X)$ and $N : A \to
+          \Ret A^\prime$, then
+        \[
+          \big(a \leftarrow \while M; N a\big) = \big(\while(\lambda x . s
+          \leftarrow; \case s \{\sigma_1 a \to s^\prime \leftarrow N a; \ret
+            (\sigma_1 a), \sigma_2 x \to \ret(\sigma_2 x)\}\big)
+        \]
+  \item Dinaturality: For $M : Y \to \Ret(A + X)$ and $N : X \to \Ret(A + Y)$.
+        We have
+        \begin{align*}
+            & ~ \while(\lambda x. s \leftarrow Nx; \case s \{\sigma_1 a \to
+          \ret(\sigma_1 a), \sigma_2 y \to M y \})                          \\
+          = & ~ \lambda x. s \leftarrow N x; \case s \{
+          \sigma_1 a \to \ret a,
+          \sigma_2 y \to \while (                                           \\
+            & \qquad \lambda y. s \leftarrow My; \case s \{
+          \sigma_1 a \to \ret(\sigma_1 a),
+          \sigma_2 x^\prime \to N x^\prime
+          \})
+          \}
+        \end{align*}
+        This is basically a do-while loop.
+\end{enumerate}
+Additionally, we can flatten nested loops. With $M : X \to \Ret((A + X) + X)$,
+then
+\begin{align*}
+  \while(\while M) = \while (\lambda x . s \leftarrow Mx; \case s \{ \\
+   & \sigma_2 x^\prime \to \ret(\sigma_2 x^\prime),                  \\
+   & \sigma_1(\sigma_2 x^\prime) \to \ret(\sigma_2 x^\prime),        \\
+   & \sigma_1 (\sigma_1 a) \to \ret(\sigma_1 a)                      \\
+  \})
+\end{align*}
+
+\subsection{Semantics}
+
+We can model while loops using only sets and pointed sets. We have
+\[
+  \inferrule{M : X \to \Ret(A + X)}{\while M : X \to \Ret A}
+\]
+Then, we have a partial function $[\![M]\!] : X \rightharpoonup A + X$.
+It follows that $[\![\while M]\!] : X \rightharpoonup A$. We then say that
+$[\![\while M]\!] x = a$ if there exists some $n$ such that $\Loop^n(\sigma_2 x)
+  = \sigma_1 a$, where $\Loop : A + X \rightharpoonup A + X$ is defined as
+$\Loop(\sigma_1 a) = \sigma_1 a$ and $\Loop(\sigma_2 x) = [\![M]\!]x$.
+
+Why we can't model recursion in this model, as we don't always have fixed
+points for arbitrary functions, e.g., swapping elements of a two-element set.
+
+\subsubsection{Domain Theory}
+
+A directed-complete partial order (DCPO) is a poset that has all joins of
+directed subsets. A subset $D \subseteq P$ is directed if for all $d_1, d_2 \in
+  D$, there exists some $d_3 \in D$ such that $d_1 \leq d_3$ and $d_2 \leq d_3$.
+All of our value types will be modeled by DCPOs. Our function types will be
+modeled by continuous functions between DCPOs. $f : P \to Q$ is continuous if
+it preserves joins of directed subsets, i.e., if $x \leq y$ then $f(x) \leq
+  f(y)$. More broadly,
+\[
+  f\left(\bigvee_{x \in D} x\right) = \bigvee_{x \in D}\left(f(x)\right)
+\]
+\end{document}
