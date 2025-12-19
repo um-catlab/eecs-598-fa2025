@@ -1,0 +1,132 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+\usepackage{mathpartir}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{stmaryrd}
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+\newcommand{\cupplus}{\mathbin{\tikz[baseline=-0.6ex]{
+    \node[inner sep=0pt] (a) {\(\cup\)};
+    \node at (a.center) {\(\scriptstyle +\)};
+}}}
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Initiality of STLC}
+\author{Lecturer: Steven Schaefer\\ Scribe: Jesse Slater}
+\date{October 15th, 2025}
+\maketitle
+
+\section{Review Of SCwF}
+An SCwF is 
+\begin{enumerate}
+    \item Category of contexts $S_C$
+    \item Set of types $S_T$
+    \item For each type A, a presheaf $S_{Tm} A$
+    \item A terminal context $\cdot \in S_C$
+    \item For each ctx $\Gamma$ and type A, a ctx $\Gamma, A \in S_C$ such that $Y(\Gamma, A) \cong Y\Gamma\times S_{Tm} A$ 
+
+    
+\end{enumerate}
+
+An SCwF may have the following type families if an object in the set of types type with the appropriate universal property exists.
+
+\subsection{Type structures} 
+\begin{enumerate}
+    \item unit \; 1 \; $Tm 1 \cong 1_{psh}$
+    \item product \; $A \times B$ \; $Tm(A\times B) \cong Tm A \times Tm B$
+    \item function \; $A => B$ \; $Tm(A => B) \cong\text{cont} \,A\,B$
+    \item empty \; 0 \; $\text{cont} \,0\,A \cong 1_{psh}$
+    \item sum \; $A + B$ \; $\text{cont} \,(A+B)\,C \cong\text{cont} \,A\,C \times \cong\text{cont} \,B\,C$
+    
+\end{enumerate}
+
+Function, product, and unit types are characterized by universal properties which map into them, but empty and sum types are characterized by properties which map out of them, which is why the first three are defined directly in terms of $Tm$ directly.
+
+\subsection{Functor of SCwFs}
+$F : S \to T$
+\begin{enumerate}
+    \item functor $F_c : S_c \to T_c$ 
+    \item function $F_T : S_T \to T_T$ 
+    \item nat trans $F_T : S_{Tm} A \to T_{Tm} (F_T A) \circ F_C^{op}$
+    \item $F_C$ preserves terminal object $\cdot_s$
+    \item $F_C$ preserves context extension
+
+\end{enumerate}
+Now we can talk about when an SCwF preserves the type structure. 
+
+\text{Lemma} For each type $A \in S_T$, $Tm\;A$ is representable, i.e. has a universal element. 
+\textit{pf.} Consider $\cdot, A$. $\Gamma \to \cdot, A \cong \Gamma \to \cdot \times Tm \; A \; \Gamma \cong {*} \times Tm \; A  \;\Gamma \cong Tm \; A\; \Gamma$
+
+\subsection{Product Type}
+We can use the previous lemma to characterize preservation of product by preservation of the universal element $(\pi_1, \pi_2) : (Tm \; A \times Tm \; B)(\cdot, A \times B)$. \\
+If F is a SCwF, F preserve products if \\
+$((F_{Tm} \pi_1 \circ -, F_{Tm} \pi_2 \circ-) : T_{Tm} F_T (A\times B) \to T_{Tm} (F_T \times F_T B)) \cong T_{Tm} F_T A \times T_{Tm} F_T B$
+is a natural isomorphism.
+A similar construction is used for the other types by finding the universal elements and requiring a similar natural isomorphism.
+
+\subsection{Sum Type}
+The universal elements of the sum type are $\sigma_1$ and $sigma_2$.
+If F is a SCwF, F preserves sum if \\
+$(id, F_{Tm} \sigma_1),(id, F_{Tm} \sigma_2) : (\; C (\Gamma, F_T(A + B)) \to Tm \; C (\Gamma, F_t\,A) \times Tm \; C (\Gamma, F_t\,B) \times $ is a natural isomorphism.
+
+\subsection{Universal Elements}
+In general, when defining type structures, if $x$ is a universal element for $P$ on $C$ and $F : C \to D$ is a functor such that we have a natural transformation $\alpha : P \to Q \circ P^{op}$, then $F$ preserves $x$ if $F x$ is a universal property of $Q$.
+
+\subsubsection{Note}
+We have been talking about weak preservation of Sum and Product types because we have asked for a natural isomorphism instead of equality. With equality we get strict isomorphism. This is uncommon in the real world unless we are defining maps out of syntax.
+
+\subsection{STLC}
+For example, our denotation functor out of $STLC(\Sigma) $ preserves type structure strictly, and if we have any other functors F and G which preserve type structure weakly, then $F \cong G$. We prove this by induction on the structure of terms. \\
+
+For example, since $STLC(0)$ is a strict initial object, and FinSet is weakly initial SCwF, we get that FinSet $\cong STLC(0)$. \\
+
+Another example : $STLC(1) \cong$ FinSet$^{op}$. This fact gives us a normalizer for this $\lambda$-calculus.
+
+\subsection{STLC over Bools}
+We can define a relation V on terms which tells us when terms are value types. For example $(a,b)$ is a value if $a$ and $b$ are values. \\
+
+Recording cuts off lecture here.
+
+\end{document}
