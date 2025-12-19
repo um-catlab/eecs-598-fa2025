@@ -1,0 +1,166 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+\usepackage{mathpartir}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{stmaryrd}
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+\newcommand{\cupplus}{\mathbin{\tikz[baseline=-0.6ex]{
+    \node[inner sep=0pt] (a) {\(\cup\)};
+    \node at (a.center) {\(\scriptstyle +\)};
+}}}
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Natural Numbers Objects, Inductive Types}
+\author{Lecturer: Max New\\ Scribe: Jesse Slater}
+\date{October 27th, 2025}
+\maketitle
+
+We have mastered STLC. Now we are going to add some new stuff. First, we are going to add something infinite.\\
+
+Recall that we can define a denotation function $STLC[\emptyset] \to Set$. We can easily prove by induction that these sets will always be finite. \\
+
+$Finset$ is the inital BiCCC
+$demo(FinSet)$ is "the" initial SCwF w $\times, =>, +, 1, 0$. \\
+
+Thus $STLC[\emptyset] \cong demo(FinSet)$, so every type in lambda calculus has a size, so every type is isomorphic to an enum. This is like a more general version of our proof that IPL on the empty signature can be reduced to booleans. \\
+
+All this is only true on the empty signature. Once we add things to the signature, we can add something like Nat which is infinite. \\
+
+\section{Natural Numbers}
+Just like we added connectives using universal properties, to add natural numbers we want to find a universal property of natural numbers to add. \\
+
+\subsection{Natural Numbers as Coproduct}
+Nat is the coproduct of Nat-copies of 1. $n = \Sigma_{i \in [n]} 1$. Now we can turn this into a nice syntax, right?\\
+
+No, this is not what we want because the elimination rule requires infinite cases and we don't want infinite syntax (although some papers have explored infinite syntax). So we want a different approach. We want a universal property that is finitely syntactically encodable.\\
+
+\subsection{Discrete Dynamical System}
+
+Let $C$ be a category with a terminal object. \\
+A discrete dynamical system is
+\begin{enumerate}
+    \item An object $X \in C$
+    \item A morphism $z : 1 \to X$
+    \item A morphism $s : X \to X$
+\end{enumerate} \\
+
+For two discrete dynamical systems X and Y, a morphism of dynamical systems f is a morphism such that the following diagram commutes.
+
+\includegraphics[scale=.1]{10-27-diagrams/IMG_0048.JPG}
+
+\textbf{Theorem:}
+In Set, the object Nat with $z () \mapsto 0$ and $s (n) \mapsto 1 + n$ is the initial discrete dynamical system. That is, for any object $X$ there exists a unique morphism $r(z, s)$ such that the following diagram commutes. 
+
+\includegraphics[scale=.1]{10-27-diagrams/IMG_0049.JPG}
+
+This morphism $r$ is called the recursor. We won't prove it's existence because the proof will depend heavily on the foundations of Set used. \\
+
+We prove uniqueness of $r$ by induction on $n$. \\
+
+Note that this is not a universal property of Set, it is a universal property of the category of discrete dynamical systems over set. We can generalize this structure to any category with a terminal object, getting a Natural Numbers Object.
+
+\subsection{Natural Numbers Object (NNO)}
+An NNO in cat C with an initial object is an initial discrete dynamical system. \\
+
+We can axiomatize this structure in lambda calculus. \\
+
+$\inferrule*[Right=]
+    { }
+  {\Gamma \vdash zero () : Nat }$
+$\inferrule*[Right=]
+    {\Gamma \vdash M : Nat }
+  {\Gamma \vdash succ M : Nat }$ \\
+  
+$\inferrule*[Right=]
+    {\Gamma \vdash M : Nat \quad \Gamma \vdash N_z : C \quad \Gamma \vdash N_s : C => C  }
+  {\Gamma \vdash rec^{Nat} M \{N_z | N_s\} : C }$ \\
+
+$rec^{Nat} zero () N_z N_s = N_Z$ \\
+
+$rec^{Nat} (succ (M)) N_z N_s = N_s(rec^{Nat} (M) N_z N_s)$ \\
+
+$\inferrule*[Right=]
+    {\Gamma, x : Nat \vdash P : C \quad \Gamma \vdash P[zero/x] = N_z : C\quad \Gamma, y : Nat \vdash P[N_s(y)/x ] = N_s(P[y/x]) : C}
+  { \Gamma \vdash P = rec \, X \, N_z \, N_s}$ \\
+
+\subsubsection{Note on Programming}
+When programming with sums, it is always the right thing to do to pattern match immediately. This isn't true for NNOs, and that is because we don't have a universal property in the category, we instead have a universal property on homomorphisms of dynamical systems.
+
+\subsubsection{Addition on NNOs}
+$add : Nat => Nat := \lambda n.rec n id (\lambda addn. \, succ (addn(m)))$
+
+\subsubsecton{Note on Induction}
+Natural numbers object can replace the principle of induction.
+
+\section{Inductive Data Types}
+Usually we want more flexibility in our programming language than having natural numbers built in. Natural numbers are usually built as an instance of a more general system of inductive datatypes.\\
+
+We are going to talk about a generic way to talk about inductive datatypes by generalizing what we saw with NNOs.\\
+
+Our approach will be to create a functor $F$ for each type type and then define the inductive type $T$ by an isomorphism  $T \cong F\, T$. This functor corresponds to the way that you pattern match on the type.\\
+
+For $List \,a$, we pick the functor $F_{List\,a}(L) := 1 + (a \times L)$. \\
+
+Now we can view an NNO as an inductive datatype formed by the functor $F_{Nat} = 1 + Nat$. \\
+
+\subsection{F-Algebras}
+Let $F : C \to C$. An F-Algebra is just $(X \in C, \varphi : FX \to X$. This generalizes the NNO.
+
+A homomorphism of F-Alg is a morphism $\varphi : (X, \alpha) \to (Y, \beta)$ which makes the following diagram commute.\\
+
+\includegraphics[scale=.1]{10-27-diagrams/IMG_0050.JPG}
+
+Now an inductive datatype is an initial F-Algebra. The initiality gives a recursor.\\
+$ind \, X := FX$\\
+$i : F(X) \to X$\\
+$rec : (F(Y) \to Y) \to X \to Y$\\
+
+\textbf{Theorem. Lambek's Lemma} If $(X, \alpha : F(X) \to X$ is an initial F-alg, then $\alpha$ is an isomorphism.
+
+\includegraphics[scale=.1]{10-27-diagrams/IMG_0051.JPG}
+
+
+\end{document}
