@@ -1,0 +1,475 @@
+\documentclass[12pt]{article}
+
+\usepackage{proof}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage[only,llbracket,rrbracket]{stmaryrd}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{quiver}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{exercise}[theorem]{Exercise}
+
+\newcommand{\db}[1]{\llbracket #1 \rrbracket}
+\newcommand{\rec}{\operatorname{rec}}
+\newcommand{\List}{\operatorname{List}}
+\newcommand{\fold}{\operatorname{fold}}
+\newcommand{\foldr}{\operatorname{foldr}}
+\newcommand{\nil}{\operatorname{nil}}
+\newcommand{\cons}{\operatorname{cons}}
+\newcommand{\map}{\operatorname{map}}
+\newcommand{\len}{\operatorname{len}}
+\newcommand{\sqr}{\operatorname{sqr}}
+\newcommand{\tsum}{\operatorname{sum}}
+\newcommand{\Int}{\operatorname{Int}}
+\newcommand{\Str}{\operatorname{Str}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\op}{\operatorname{op}}
+\newcommand{\Stream}{\operatorname{Stream}}
+\newcommand{\Bool}{\operatorname{Bool}}
+\newcommand{\Lang}{\operatorname{Lang}}
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+\setlength{\headheight}{14.49998pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Initial Algebras and Terminal Coalgebras}
+\author{Lecturer: Max S. New\\ Scribe: Ivan Wei}
+\date{October 29, 2025}
+\maketitle
+
+\section{Initial Algebras}
+Last time, we generalized the idea of a Natural Numbers Object to an initial
+algebra of a functor to define inductive data types. 
+
+\begin{definition}
+If $F$ is a functor, and $\mu F$ is an object, then the \textbf{initial algebra}
+of $F$ is an algebra
+\[
+i: F(\mu F) \to \mu F
+\]
+$\mu F$ is often called a ``least fixed point'' of $F$.
+\end{definition}
+
+The initial algebra packs all of the constructors of the data type into
+one object.
+
+\begin{definition}
+The initial algebra of $F$ is initial in the category of algebras on $F$. Thus,
+for any other algebra $\alpha: F(X) \to X$, there exists a unique map
+$\rec^F\alpha : \mu F \to X$ called the \textbf{recursor} making the following
+diagram commute:
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCJGKFxcbXUgRikiXSxbMCwzLCJcXG11IEYiXSxbMywwLCJGKFgpIl0sWzMsMywiWCJdLFswLDEsImkiLDJdLFswLDIsIkYoXFxvcGVyYXRvcm5hbWV7cmVjfV5GXFxhbHBoYSkiXSxbMSwzLCJcXG9wZXJhdG9ybmFtZXtyZWN9XkZcXGFscGhhIiwyXSxbMiwzLCJcXGFscGhhIl1d
+\[\begin{tikzcd}
+	{F(\mu F)} &&& {F(X)} \\
+	\\
+	\\
+	{\mu F} &&& X
+	\arrow["{F(\operatorname{rec}^F\alpha)}", from=1-1, to=1-4]
+	\arrow["i"', from=1-1, to=4-1]
+	\arrow["\alpha", from=1-4, to=4-4]
+	\arrow["{\operatorname{rec}^F\alpha}"', from=4-1, to=4-4]
+\end{tikzcd}\]
+\end{definition}
+
+\section{Lists}
+\begin{example}
+Consider the functor $F_{\List A}$ taking objects $X \mapsto 1 + (A \times X)$.
+For an object $X$, an algebra for such a functor is a morphism
+\[
+1 + (A \times X) \to X
+\]
+By the universal property of the sum, to define such a morphism, it is
+sufficient to define morphisms $n: 1 \to X$ and $c: A \times X \to X$.
+
+Intuitively, $n$ is a ``starting value'', and $c$ is an ``accumulator function''.
+
+We call the least fixed point of the initial algebra of $F$, $\List A$, and
+since
+it is initial, given any $n$ and $c$ above, there exists a recursor $\List A \to
+X$ which is called \textbf{fold} or $\foldr(n, c)$.
+\end{example}
+
+\begin{remark}
+Since $\foldr(n, c)$ is a homomorphism of $F_{\List A}$-algebras, some of our
+usual equational reasoning principles follow.
+\begin{align*}
+\foldr(n, c)(\nil) &= n \\
+\foldr(n, c)(\cons(a, x)) &= c(a, \foldr(n, c)(x))
+\end{align*}
+\end{remark}
+
+\begin{remark}
+Lambek's Lemma says that $i$ above is an isomorphism.
+\end{remark}
+
+\begin{example}
+For $F_{\List A}$, $i$ above is the map $[\nil, \cons]$. Since $i$ is an
+isomorphism, there exists an inverse map called \textbf{uncons}. This map
+effectively allows us to pattern match on lists. Applying \textbf{uncons}
+on a list allows us to check whether or not a list is empty, and if not, what the
+head is.
+
+Lambek's Lemma tells us that in fact, $\foldr(n, c)$ can be used to implement
+uncons (and in general the recursor can be used to implement the inverse of $i$.
+This is probably a bad idea, because $\foldr(n, c)$ will recursively
+traverse the entire list.
+
+Let's explicitly implement uncons this way: let's define
+$n: 1 \to 1 + (A \times \List A)$ and $c: A \times (1 + (A \times \List A)) \to
+1 + (A \times \List A)$. Well, $n$ is easy: define it to take $()$ to
+$\sigma_0()$. For $c$, take $(a, \sigma_0())$ to $\sigma_1(a, \nil())$ and take
+$(a, \sigma_1(a', \ell))$ to $\sigma_1(a, \cons(a', \ell))$.
+
+Intuitively, $\foldr(n, c)$ is effectively walking down the entire list, getting
+to the end, and saying, ``this is the empty list''. On each element, transform
+this view and reconstruct the list. All for a pattern match.
+
+A similar technique can be used to define the predecessor function on natural
+numbers.
+\end{example}
+
+\section{Loop Fusion}
+We can start using this initiality principle to start verifying that different
+recursive algorithms are equivalent.
+
+\begin{example}
+Suppose we were trying to implement an algorithm that is the composition of
+the $\map \len: \List \Str \to \List \Int$ and $\map \sqr:
+\List \Int \to \Int \times \Int$. For the sake of optimization, could we write
+this composition as a single fold?
+
+First, let's make sure to define everything. Consider the functors
+\begin{align*}
+F_{\List \Str} X = 1 + (\Str \times X)
+F_{\List \Int} X = 1 + (\Int \times X)
+\end{align*}
+The functor $F_{\List A} X = 1 + (A \times X)$ is functorial in $A$.
+Therefore, any morphism $A \to B$ induces a natural transformation
+$F_{\List A} \Rightarrow F_{\List B}$. Here, we have a natural transformation
+called $\len': F_{\List \Str} \Rightarrow F_{\List \Int}$. Then, we call
+the recursor $\map \len$, which makes the following diagram commute:
+% https://q.uiver.app/#q=WzAsNSxbMCw2LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7U3RyfX0iXSxbMywzLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMyw2LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX0iXSxbMCwwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtTdHJ9fSkiXSxbMywwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMCwyLCJcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7bGVufSIsMl0sWzEsMiwiaSJdLFs0LDEsIlxcb3BlcmF0b3JuYW1le2xlbn0nX3tcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX19Il0sWzMsNCwiRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtTdHJ9fShcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7bGVufSkiXSxbMywwLCJpIiwyXV0=
+\[\begin{tikzcd}
+	{F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Str}})} &&& {F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	&&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	{\mu F_{\operatorname{List}\operatorname{Str}}} &&& {\mu F_{\operatorname{List}\operatorname{Int}}}
+	\arrow["{F_{\operatorname{List}\operatorname{Str}}(\operatorname{map}\operatorname{len})}", from=1-1, to=1-4]
+	\arrow["i"', from=1-1, to=7-1]
+	\arrow["{\operatorname{len}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=1-4, to=4-4]
+	\arrow["i", from=4-4, to=7-4]
+	\arrow["{\operatorname{map}\operatorname{len}}"', from=7-1, to=7-4]
+\end{tikzcd}\]
+Including $\len$ in the name of the recursor indicates the dependence on
+$\len: \Str \to \Int$ in the definition of $\len'$ and thus in the
+unique determination of the recursor.
+
+We can define $\sqr'$ similarly from $\sqr$, and extend our diagram to the
+following that commutes:
+% https://q.uiver.app/#q=WzAsOCxbMywzLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMCwwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtTdHJ9fSkiXSxbMywwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbNiwzLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbNiw2LCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMyw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX0iXSxbMCw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7U3RyfX0iXSxbNiw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX0iXSxbMiwwLCJcXG9wZXJhdG9ybmFtZXtsZW59J197XFxtdSBGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19fSJdLFsxLDIsIkZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7U3RyfX0oXFxvcGVyYXRvcm5hbWV7bWFwfVxcb3BlcmF0b3JuYW1le2xlbn0pIl0sWzAsMywiRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fShcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7c3FyfSkiXSxbMyw0LCJcXG9wZXJhdG9ybmFtZXtzcXJ9J197XFxtdSBGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19fSJdLFs2LDUsIlxcb3BlcmF0b3JuYW1le21hcH1cXG9wZXJhdG9ybmFtZXtsZW59IiwyXSxbMSw2LCJpIiwyXSxbNSw3LCJcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7c3FyfSIsMl0sWzAsNSwiaSJdLFs0LDcsImkiXV0=
+\[\begin{tikzcd}
+	{F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Str}})} &&& {F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	&&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} &&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	&&&&&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	{\mu F_{\operatorname{List}\operatorname{Str}}} &&& {\mu F_{\operatorname{List}\operatorname{Int}}} &&& {\mu F_{\operatorname{List}\operatorname{Int}}}
+	\arrow["{F_{\operatorname{List}\operatorname{Str}}(\operatorname{map}\operatorname{len})}", from=1-1, to=1-4]
+	\arrow["i"', from=1-1, to=10-1]
+	\arrow["{\operatorname{len}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=1-4, to=4-4]
+	\arrow["{F_{\operatorname{List}\operatorname{Int}}(\operatorname{map}\operatorname{sqr})}", from=4-4, to=4-7]
+	\arrow["i", from=4-4, to=10-4]
+	\arrow["{\operatorname{sqr}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=4-7, to=7-7]
+	\arrow["i", from=7-7, to=10-7]
+	\arrow["{\operatorname{map}\operatorname{len}}"', from=10-1, to=10-4]
+	\arrow["{\operatorname{map}\operatorname{sqr}}"', from=10-4, to=10-7]
+\end{tikzcd}\]
+Then by the naturality of $\len'$, we can further extend the commutative
+diagram to have
+% https://q.uiver.app/#q=WzAsOSxbMywzLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMCwwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtTdHJ9fSkiXSxbMywwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbNiwzLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbNiw2LCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMyw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX0iXSxbMCw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7U3RyfX0iXSxbNiw5LCJcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX0iXSxbNiwwLCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcbXUgRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fSkiXSxbMiwwLCJcXG9wZXJhdG9ybmFtZXtsZW59J197XFxtdSBGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19fSJdLFsxLDIsIkZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7U3RyfX0oXFxvcGVyYXRvcm5hbWV7bWFwfVxcb3BlcmF0b3JuYW1le2xlbn0pIl0sWzAsMywiRl97XFxvcGVyYXRvcm5hbWV7TGlzdH1cXG9wZXJhdG9ybmFtZXtJbnR9fShcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7c3FyfSkiXSxbMyw0LCJcXG9wZXJhdG9ybmFtZXtzcXJ9J197XFxtdSBGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le0ludH19fSJdLFs2LDUsIlxcb3BlcmF0b3JuYW1le21hcH1cXG9wZXJhdG9ybmFtZXtsZW59IiwyXSxbMSw2LCJpIiwyXSxbNSw3LCJcXG9wZXJhdG9ybmFtZXttYXB9XFxvcGVyYXRvcm5hbWV7c3FyfSIsMl0sWzAsNSwiaSJdLFs0LDcsImkiXSxbMiw4LCJGX3tcXG9wZXJhdG9ybmFtZXtMaXN0fVxcb3BlcmF0b3JuYW1le1N0cn19KFxcb3BlcmF0b3JuYW1le21hcH1cXG9wZXJhdG9ybmFtZXtzcXJ9KSJdLFs4LDMsIlxcb3BlcmF0b3JuYW1le2xlbn0nX3tcXG11IEZfe1xcb3BlcmF0b3JuYW1le0xpc3R9XFxvcGVyYXRvcm5hbWV7SW50fX19Il1d
+\[\begin{tikzcd}
+	{F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Str}})} &&& {F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Int}})} &&& {F_{\operatorname{List}\operatorname{Str}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	&&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} &&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	&&&&&& {F_{\operatorname{List}\operatorname{Int}}(\mu F_{\operatorname{List}\operatorname{Int}})} \\
+	\\
+	\\
+	{\mu F_{\operatorname{List}\operatorname{Str}}} &&& {\mu F_{\operatorname{List}\operatorname{Int}}} &&& {\mu F_{\operatorname{List}\operatorname{Int}}}
+	\arrow["{F_{\operatorname{List}\operatorname{Str}}(\operatorname{map}\operatorname{len})}", from=1-1, to=1-4]
+	\arrow["i"', from=1-1, to=10-1]
+	\arrow["{F_{\operatorname{List}\operatorname{Str}}(\operatorname{map}\operatorname{sqr})}", from=1-4, to=1-7]
+	\arrow["{\operatorname{len}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=1-4, to=4-4]
+	\arrow["{\operatorname{len}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=1-7, to=4-7]
+	\arrow["{F_{\operatorname{List}\operatorname{Int}}(\operatorname{map}\operatorname{sqr})}", from=4-4, to=4-7]
+	\arrow["i", from=4-4, to=10-4]
+	\arrow["{\operatorname{sqr}'_{\mu F_{\operatorname{List}\operatorname{Int}}}}", from=4-7, to=7-7]
+	\arrow["i", from=7-7, to=10-7]
+	\arrow["{\operatorname{map}\operatorname{len}}"', from=10-1, to=10-4]
+	\arrow["{\operatorname{map}\operatorname{sqr}}"', from=10-4, to=10-7]
+\end{tikzcd}\]
+This allows us to immediately see how to compose the two maps as one fold:
+take the fold (recursor) of the composition of the three morphisms on the right.
+By the functoriality of $F_{\List \Int}$ and rules about composition of natural
+transformations, this will end up being exactly what you expect: 
+$\map (\sqr \circ \len)$.
+\end{example}
+
+\begin{remark}
+The above argument generalizes to show that $\map g \circ \map f =
+\map (g \circ f)$ for any morphisms $f, g$ between the base types of the
+lists.
+\end{remark}
+
+\begin{example}
+What if we wanted to further compose the previous example with the morphism
+$(\len, \tsum): \List \Int \to \Int \times \Int$?
+
+\begin{lemma}
+The category of $F$-algebras has products.
+
+\begin{proof}
+Suppose $\alpha: FX \to X$ and $\beta: FY \to Y$ are two $F$-algebras.
+Then we can define the algebra structure on $F(X \times Y) \to X \times Y$
+by $(\alpha, \beta) \circ (F \pi_1, F\pi_2)$.
+\end{proof}
+\end{lemma}
+
+Continuing the example, since algebra structures define folds, we would like
+to show that a pair of folds can be expressed as a single fold. Consider
+the following diagram that commutes for $\alpha, \beta$ that are $F$-algebras
+on $X$ and $Y$ respectively:
+% https://q.uiver.app/#q=WzAsNixbMCwzLCJcXG11IEYiXSxbMywzLCJYIFxcdGltZXMgWSJdLFszLDAsIkYoWCBcXHRpbWVzIFkpIl0sWzAsMCwiRihcXG11IEYpIl0sWzYsMCwiRlgiXSxbNiwzLCJYIl0sWzAsMSwiXFxvcGVyYXRvcm5hbWV7cmVjfV5GKFxcYWxwaGEgXFxjaXJjIEZcXHBpXzEsIFxcYmV0YSBcXGNpcmMgRlxccGlfMikiLDJdLFsyLDEsIihcXGFscGhhIFxcY2lyYyBGXFxwaV8xLCBcXGJldGEgXFxjaXJjIEZcXHBpXzIpIl0sWzMsMCwiaSIsMl0sWzMsMiwiRihcXG9wZXJhdG9ybmFtZXtyZWN9XkYoXFxhbHBoYSBcXGNpcmMgRlxccGlfMSwgXFxiZXRhIFxcY2lyYyBGXFxwaV8yKSkiXSxbMiw0LCJGXFxwaV8xIl0sWzQsNSwiXFxhbHBoYSJdLFsxLDUsIlxccGlfMSIsMl1d
+\[\begin{tikzcd}
+	{F(\mu F)} &&& {F(X \times Y)} &&& FX \\
+	\\
+	\\
+	{\mu F} &&& {X \times Y} &&& X
+	\arrow["{F(\operatorname{rec}^F(\alpha \circ F\pi_1, \beta \circ F\pi_2))}", from=1-1, to=1-4]
+	\arrow["i"', from=1-1, to=4-1]
+	\arrow["{F\pi_1}", from=1-4, to=1-7]
+	\arrow["{(\alpha \circ F\pi_1, \beta \circ F\pi_2)}", from=1-4, to=4-4]
+	\arrow["\alpha", from=1-7, to=4-7]
+	\arrow["{\operatorname{rec}^F(\alpha \circ F\pi_1, \beta \circ F\pi_2)}"', from=4-1, to=4-4]
+	\arrow["{\pi_1}"', from=4-4, to=4-7]
+\end{tikzcd}\]
+Since the recursor $\mu F \to X$ is unique, projecting out
+the result of this ``joint recursor'' (e.g., the composition in the bottom of
+the diagram) is the same as the recursor. Applying to the specific case above,
+we can use one fold to express the pair of folds $(\len, \tsum)$ above.
+\end{example}
+
+\begin{remark}
+The optimizations justified by the above arguments are called \textbf{loop fusion}.
+Since our arguments did not depend on $F$, they also justify loop fusion for trees
+and other similar objects.
+\end{remark}
+
+\section{Misc. Remarks on Fixed Points}
+\begin{remark}
+There are many fixed points on functors; the initial algebra gives the minimal
+one, which only includes the things you can get from iterating the constructor.
+
+For example, another fixed point for the functor $F_\N X = 1 + X$ is
+$1 + \N$.
+
+The reason why we want the \textit{least} fixed point is to give us these
+reasoning principles, like recursors from the initial algebra property.
+\end{remark}
+
+\section{Terminal Co-algebras of $F$}
+\begin{definition}
+A \textbf{co-algebra} is an algebra of $F^{\op}$.
+
+Explicitly, it looks like, for its object $X$, a morphism $X \to FX$.
+\end{definition}
+
+\begin{remark}
+You should think of coalgebras as a deterministic automaton. For example,
+the coalgebra $X \to 1 + X$ as starting with some state $X$, then deciding
+whether to terminate (case of $1$) or to continue running (case of $X$).
+\end{remark}
+
+\begin{definition}
+A \textbf{co-algebra homomorphism} $f: X \to Y$ makes the following diagram
+commute:
+
+% https://q.uiver.app/#q=WzAsNCxbMCwzLCJGWCJdLFswLDAsIlgiXSxbMywwLCJZIl0sWzMsMywiRlkiXSxbMSwyLCJmIl0sWzEsMCwiXFxhbHBoYSIsMl0sWzAsMywiRmYiLDJdLFsyLDMsIlxcYmV0YSJdXQ==
+\[\begin{tikzcd}
+	X &&& Y \\
+	\\
+	\\
+	FX &&& FY
+	\arrow["f", from=1-1, to=1-4]
+	\arrow["\alpha"', from=1-1, to=4-1]
+	\arrow["\beta", from=1-4, to=4-4]
+	\arrow["Ff"', from=4-1, to=4-4]
+\end{tikzcd}\]
+\end{definition}
+
+\begin{remark}
+In terms of our automata analogy, such a homomorphism is a ``simulation''
+of transition systems. The homomorphism itself is a translation of $X$
+states to $Y$ states.
+The termination behavior should match because
+the above diagram commutes; transitioning then translating the state
+should be the same as translating the state then simulating a transition.
+\end{remark}
+
+\begin{definition}
+The \textbf{terminal $F$-coalgebra} is the terminal object in the category
+of $F$-coalgebras.
+\end{definition}
+
+\begin{example}
+The terminal $F_\N$-coalgebra object is $\N^+ \coloneqq \N \uplus \{\omega\}$.
+$\omega$ represents an object at the ``top'' of the natural numbers.
+
+The actual morphism is given by the map
+\begin{align*}
+\N^+ &\to 1 + \N^+ \\
+0 &\mapsto \sigma_0() \\
+n + 1 &\mapsto \sigma_1(n) \\
+\omega &\mapsto \sigma_1(\omega)
+\end{align*}
+
+This morphism is indeed an isomorphism, giving a different fixed point solution to $F_\N X \simeq X$.
+
+This is terminal, so let's think of the analogous ``recursor'' $F_\N$-coalgebra
+homomorphism $X \to \N^+$ for any $F_\N$-coalgebra $X \to FX$.
+In terms of our automata analogy, the analogous ``recursor'' sends any state $X$
+to the number of steps it will terminate in. This is a homomorphism because
+if your automata takes a step, then whatever it evolves into will terminate in
+one fewer step, so the number also transitions via predecessor. Note that
+this morphism never maps to $0$.
+
+We might call this morphism ``co-recursion'', the ``co-recursor'', or
+``unfold''. 
+\end{example}
+
+\begin{remark}
+Just like how $\N^+$ is a solution to $F_\N X \simeq X$, most other terminal
+co-algebra fixed point solutions will look like the respective initial algebra
+least fixed point solution but with some adjustment to make it infinite.
+\end{remark}
+
+\begin{remark}
+The terminal co-algebra's map is an isomorphism by the dual application of
+Lambek's Lemma.
+\end{remark}
+
+\begin{remark}
+You can define the inverse of the terminal co-algebra's map using the
+corecursor, just like how you can define the inverse of the initial algebra's
+map using the recursor.
+\end{remark}
+
+\begin{definition}
+We call the terminal $F$-coalgebra object $\nu F$.
+\end{definition}
+
+\begin{example}
+$\nu F_{\List A}$ is the possibly infinite list.
+
+This is a good example of why we choose to use automata to talk about these
+co-algebras; you can't keep $\nu F_{\List A}$ in memory, so it has to be
+lazily generated somehow by co-recursion.
+\end{example}
+
+\begin{example}
+Let $F_{\Stream A} X = A \times X$.
+
+The initial $F_{\Stream A}$ algebra object is $\mu F_{\Stream A} = \varnothing$.
+
+The terminal $F_{\Stream A}$ co-algebra object is $\nu F_{\Stream A} = A^\N$,
+the (now-guaranteed) ``infinite list'' or ``infinite sequence'' or ``stream''. 
+\end{example}
+
+\begin{example}
+Let $F_{D} X = \Bool \times X^\Sigma$.
+
+Any $F_D$-co-algebra map is $X \to \Bool \times X^\Sigma$, which is
+uniquely given by a map $X \to \Bool$ and a map $X \times \Sigma \to X$ (currying).
+These maps are exactly the data of a deterministic automaton without a requirement
+that the state space $X$ is finite and no initial state is specified.
+
+A DFA is given by a $F_D$-co-algebra map with the additional restriction that
+the state space is finite and a specification for the initial state.
+
+The map $X \to \Bool$ gives whether the current state is accepting (though you
+can keep running after you accept).
+
+The map $X \times \Sigma \to X$ takes in the current state and an input element
+of the alphabet and maps it to the next state.
+
+The terminal $F_D$-co-algebra should summarize all the behavior you've encoded
+in a state; it is $\nu F_D = \mathcal{P}(\Sigma^*) = \Lang(\Sigma)$,
+all languages generated by the alphabet $\Sigma$ (because of the lack of
+finite restriction).
+
+Let's put the $F_D$-co-algebra map on this; first, the map $\Lang(\Sigma) \to \Bool$
+is defined as if the empty string is accepted ($\varepsilon \in -$).
+The map $\Lang(\Sigma) \times \Sigma \to \Lang(\Sigma)$ is the \textbf{Brzozowski
+derivative}, defined as ``removing'' the first character:
+\[
+d(L, c) = \{w \mid cw \in L\}
+\]
+
+For some arbitrary automata $F_D$-co-algebra $\tau: X \to \Bool \times X^\Sigma$,
+the co-recursor $X \to \Lang(\Sigma)$ maps states to the language which
+the state generates. By definition, the language generated by the state
+is the set of strings accepted by the automaton if it were run starting
+from that state and with that string as input.
+
+This is a homomorphism; the $\epsilon \in -$ case is obvious. For the Brzozowski
+derivative, if you take a transition for a character $c$, then the language
+generated by the result is going to be the previous language but with the
+$c$ removed since you just ate it from the input.
+\end{example}
+
+\begin{remark}
+Kleene's theorem says that DFAs correspond to regular languages under the
+$F_D$-co-algebra structure (e.g., as a sub-co-algebra structure).
+\end{remark}
+
+\begin{remark}
+Co-induction is a principle for reasoning when two functions into a
+terminal co-algebra are equal.
+\end{remark}
+
+\end{document}
+
