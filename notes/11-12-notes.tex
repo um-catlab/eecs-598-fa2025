@@ -1,0 +1,229 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+\usepackage{mathpartir}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+
+\newcommand{\cat}{\mathcal}
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\Prop}{\mathrm{Prop}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 22: Adjunctions \& Adjoint Functors}
+\author{Lecturer: Max S. New\\ Scribe: Christopher Davis}
+\date{November 12th, 2025}
+\maketitle
+
+
+\section{Adjunctions}
+
+\begin{definition}
+Let $\mathcal{C}$ and $\mathcal{D}$ be categories. An \textbf{adjunction} between $\mathcal{C}$ and $\mathcal{D}$ is:
+\begin{itemize}
+    \item A pair of functors: $F : \mathcal{C} \to \mathcal{D}$ ({left adjoint}) and $G : \mathcal{D} \to \mathcal{C}$ (right adjoint)
+    \item A natural isomorphism for all $c \in \mathcal{C}$ and $d \in \mathcal{D}$:
+\end{itemize}
+\[
+\hom_{\mathcal{D}}(Fc, d) \cong \hom_{\mathcal{C}}(c, Gd)
+\]
+We write this as $F \dashv G$.
+\end{definition}
+
+\begin{center}
+\begin{tikzcd}[row sep=large, column sep=huge]
+\mathcal{C} \arrow[r, "F", bend left=35] & 
+\mathcal{D} \arrow[l, "G", bend left=35] \arrow[phantom, from=1-1, to=1-2, "\dashv" rotate=-90]
+\end{tikzcd}
+\end{center}
+
+The diagram above represents an adjunction $F \dashv G$, where:
+\begin{itemize}
+    \item $F$ is the left adjoint functor from $\mathcal{C}$ to $\mathcal{D}$
+    \item $G$ is the right adjoint functor from $\mathcal{D}$ to $\mathcal{C}$
+    \item The symbol $\dashv$ indicates the adjunction relationship
+\end{itemize}
+
+We say $F$ is left adjoint to $G$, or $G$ is right adjoint to $F$. 
+
+\bigskip 
+
+This adjunction means there is a natural bijection: $\mathcal{D}(Fc, d) \cong \mathcal{C}(c, Gd)$ for all objects $c$ in $\mathcal{C}$ and $d$ in $\mathcal{D}$. I.e., a morphism out of the left adjoint in one category is equivalent to a morphism going into the right adjoint in the other category.
+
+\medskip
+
+\begin{definition}[Profunctor]
+    Let $\mathcal{C},\mathcal{D}$ be categories. A \textbf{profunctor} $p: \mathcal{C} \nrightarrow \mathcal{D}$ is a functor $p:\mathcal{D}^{\textmd{op}} \times \mathcal{C} \rightarrow \textmd{Set}$
+\end{definition}
+
+\noindent Profunctors can be considered generalizations of relations.
+
+\medskip
+
+\begin{remark}
+An adjunction between $\mathcal{C}$ and $\mathcal{D}$ is a natural isomorphism between two profunctors $\cat D \nrightarrow \cat C$.
+\end{remark}
+
+\noindent\textmd{Consider $F \dashv G$. In $\mathcal{D}(Fc, d) \cong \mathcal{C}(c, Gd)$, note $c$ is in the contravariant position on both sides, and $d$ the covariant. So, both sides stand for functors $\mathcal{C}^{\textmd{op}} \times \mathcal{D} \rightarrow \textmd{Set}$. These are precisely profunctors $\cat D \nrightarrow \cat C$.}
+
+\pagebreak
+
+\subsection{Examples}
+
+\begin{definition}[Galois connection]
+\end{definition}
+\noindent Suppose $\cat C$ and $\cat D$ are posets (or pre-orders). Let $F,G$ be monotone functions s.t.
+
+\begin{center}
+\begin{tikzcd}[row sep=large, column sep=huge]
+(\mathcal{C}, \leq) \arrow[r, "F", bend left=25] & 
+(\mathcal{D}, \leq) \arrow[l, "G", bend left=25]
+\end{tikzcd}
+\end{center}
+
+\noindent for all $c \in \cat C$ and $d \in \cat D$, $\;Fc \leq_{\cat D} d$ if and only if $c \leq_{\cat C} Gd$.
+
+\begin{center}
+    This is called (for posets) a \textbf{Galois connection}.
+\end{center}
+
+
+\bigskip
+
+\noindent Let's consider examples of Galois connections.
+
+\subsubsection{Galois Connection: $\mathbb{Z}$ and $\mathbb{R}$}
+
+Consider the usual orderings of $(\mathbb{Z},\leq)$ and $(\mathbb{R}, \leq)$. Take the inclusion map $i:\mathbb{Z} \rightarrow \mathbb{R}$. This is clearly monotone and a suborder. Is this an adjunction?
+
+\begin{center}
+\begin{tikzcd}[row sep=large, column sep=huge]
+(\mathbb{Z}, \leq) 
+\arrow[r, "L", bend left=35] 
+\arrow[r, hookrightarrow, "i"', yshift=-0.1ex] &
+(\mathbb{R}, \leq) 
+\arrow[l, "R", bend left=35]
+\end{tikzcd}
+\end{center}
+
+What would the right adjoint be? Well, the condition here would be: $\forall z \in \mathbb{Z}$ and $r \in \mathbb{R}$, $\; i\;z \leq r$ iff. $z \leq R \; r \in \mathbb{Z}$.
+I.e., $i\;z = z$ is less than or equal to some integer that's a function of $r$. Then, what is $R$? Naturally, the ceiling or floor comes to mind. Note we have $1 \leq 1/2$ iff. $1 \leq R \;1/2$, so $R \neq \lceil\cdot \rceil$. However, $R = \lfloor \cdot \rfloor$ works; i.e., $z \leq r \Leftrightarrow z \leq \lfloor r \rfloor$.
+
+What about the left adjoint $L$? We want $L \; r \leq z$ iff. $r \leq i \; z$. Well, note that $\lceil r \rceil \leq z \Leftrightarrow r \leq z$. So, we can say $L = \lceil \cdot \rceil$.
+
+\medskip
+
+This then defines an adjunction $\lceil \cdot \rceil \dashv \lfloor \cdot \rfloor$
+
+
+\subsubsection{Galois Connection: Propositions}
+
+Let's consider propositions with a provability ordering $(\Prop, \vdash)$ and, on the other hand, families of propositions $\left(\Prop^X, \vdash\right)$, where $X$ is a set and provability here is pointwise. We can consider $\Prop^X$ as as propositions with a variable $x$,\; i.e. 
+\begin{equation}
+    \label{eq-prop}
+    \varphi(x) 
+\vdash \psi(x) \; \forall x \in X
+\end{equation}
+
+\noindent These propositions could simply be booleans, or it could be in a formal system of logic.
+
+Similar to example 1.1.1, there is a form of inclusion here, $(\Prop, \vdash) \hookrightarrow(\Prop^X, \vdash )$, which we can think of as ``weakening'' the proposition. I.e., for the proposition $\varphi$ in (\ref{eq-prop}), we can weaken it with respect to the variable $x$ to think of it as index family propositions. Or, we take each proposition to the constant function that returns that. We call this inclusion $\Delta$.
+
+\begin{equation}
+    (\Prop, \vdash) \lhook\joinrel\xrightarrow{\;\Delta\;}(\Prop^X, \vdash ) \qquad \textmd{where} \quad \Delta(\varphi)(x) = \varphi
+\end{equation}
+
+\noindent Note that this is a monotone function. If $\varphi \vdash \psi$, then $\Delta(\varphi)(x) \vdash \Delta(\psi)(x)$.
+
+\medskip
+
+Do we have a right and left adjoint here? A right adjoint means that, $\forall x$,\\
+$\Delta(\varphi)(x) \vdash \Delta(\psi)(x)$ iff. $\varphi \vdash R( \psi)$. So, what is this proposition $R(\psi)$? It is a universal quantifier. It's saying that we can prove $\forall x \; . \; \psi(x) \dashv \varphi$ iff. $\Delta(\varphi)(x) \vdash \Delta(\psi)(x), \forall x$. This is actually the rule of provability in first order logic; for adding free variable $x$,
+
+\begin{mathpar}
+\mprset{fraction={===}}
+\inferrule*[]
+{
+  \varphi \vdash^x \psi(x)
+}
+{
+  \varphi \vdash \forall x . \psi(x)
+}
+\end{mathpar}
+
+\noindent I.e. the for-all introduction principal.
+
+Then, the left adjoint would mean $L(\psi) \vdash \varphi$ iff. $\forall x, \; \psi(x) \vdash \varphi = \Delta(\varphi)(x)$. This, in turn, will be the existential quantifier. The idea is that we can prove something follows from an existentially-quanitified statement if under any possible witness we could prove the statement. Symbolically, $\exists \; x \; . \; \psi(X) \vdash \varphi$, meaning we need to prove $\psi(x) \vdash \varphi $ for a free variable $x$ (i.e., $\psi(x) \vdash^x \varphi $). In a sequence calculus presentation of first order logic, the existential quantifier is just the rule
+
+\begin{mathpar}
+\inferrule*[]
+{
+  \psi(x) \vdash^x \varphi
+}
+{
+  \exists x . \psi(x) \vdash \varphi
+}
+\end{mathpar}
+
+
+\noindent So, we're left with:
+
+\begin{center}
+\begin{tikzcd}[row sep=large, column sep=huge]
+(\Prop, \vdash) 
+\arrow[r, "\exists", bend left=35] 
+\arrow[r, hookrightarrow, "\Delta"', yshift=-0.1ex] &
+\left(\Prop^X, \vdash \right) 
+\arrow[l, "\forall", bend left=35]
+\end{tikzcd}
+\end{center}
+
+
+There is still some ambiguity here. For formalizing the adjunction, there are two setups. The first is to just take propositions as booleans and $\Prop^X$ as functions $X \rightarrow \Prop$. Then, left/right adjoint will simply be existential/universal quantifiers being used to compute a boolean (or a proposition). On the other hand, we can take a fully-syntactic view and treat $\Prop^X$ as syntactic propositions. That is, not as functions $X \rightarrow \Prop$, but rather as propositions with a free variable of type $X$.
+
+
+\end{document}

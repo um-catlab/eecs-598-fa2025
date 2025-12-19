@@ -18,7 +18,7 @@ Everyone taking the class (including auditors) must present once.
 | PS2         | Jesse Slater|             |
 | PS3         |   Ayan C    |             |
 | PS4         | Chris Davis |             |
-| PS5         |             |             |
+| PS5         | Conner Rose |             |
 | PS6         |             |             |
 
 ## Scribed Notes Signup
@@ -47,19 +47,18 @@ Schedule:
 | Wed, Oct 01  |Yuchen Jiang|
 | Mon, Oct 06  | Conner Rose |
 | Wed, Oct 08  | Eric Bond  |
-| Wed, Oct 15  |            |
+| Wed, Oct 15  |Jesse Slater|
 | Mon, Oct 20  | Yichen Tao |
 | Wed, Oct 22  |A Bandukwala|
-| Mon, Oct 27  |            |
-| Wed, Oct 29  |            |
-| Mon, Nov 03  |            |
+| Mon, Oct 27  |Jesse Slater|
+| Wed, Oct 29  | Ivan Wei   |
+| Mon, Nov 03  |Yuchen Jiang|
 | Wed, Nov 05  |  Eric Bond |
-| Mon, Nov 10  |            |
-| Wed, Nov 12  |            |
-| Mon, Nov 17  |            |
-| Wed, Nov 19  |            |
-| Wed, Nov 20  |            |
-| Mon, Nov 24  |            |
+| Mon, Nov 10  |   Ayan C   |
+| Wed, Nov 12  |Chris Davis |
+| Mon, Nov 17  |Chris Davis |
+| Wed, Nov 19  |Conner Rose |
+| Mon, Nov 24  |Conner Rose |
 | Mon, Dec 01  |A Bandukwala|
 | Wed, Dec 03  |            |
 | Mon, Dec 08  |            |

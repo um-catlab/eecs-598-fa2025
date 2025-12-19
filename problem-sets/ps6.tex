@@ -1,0 +1,157 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm,stmaryrd}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+\usepackage{minted}
+
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%% \lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 6}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\rec}{\textrm{rec}}
+\newcommand{\zero}{\textrm{zero}}
+\newcommand{\suc}{\textrm{succ}}
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\mathrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\mathrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\casePlus}[5]{\mathrm{case}_{+}\,{#1}\{\sigma_1{#2}\to {#3}|\sigma_2{#4}\to {#5}\}}
+\newcommand{\caseZero}[1]{\mathrm{case}_0\,{#1}\{\}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\lfpt}{\Sigma_{\mathrm{lfpt}}}
+
+\newcommand{\cat}{\mathcal}
+
+\newcommand{\stlccart}{\mathrm{STLC}(1,\times)}
+\newcommand{\stlcccc}{\mathrm{STLC}(1,\times,\Rightarrow)}
+\newcommand{\Tm}{\mathrm{Tm}}
+\newcommand{\sem}[1]{\llbracket\cdot\rrbracket}
+
+\newcommand{\Timm}{T_{\textrm{imm}}}
+\newcommand{\Tmut}{T_{\textrm{mut}}}
+
+\begin{document}
+
+\title{Problem Set 6: Adjunctions and Algebras}
+\date{Released: November 13, 2025\\
+  %% Updated Octover 22, 2025\\
+  Due: Novemmber 25, 2025, 11:59pm
+}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2.
+Your solutions must be submitted in pdf produced using LaTeX.
+
+\begin{definition}[Algebraic Theory of Immutable State]
+  The algebraic theory of an immutable boolean state $\Timm$
+  consists of one binary operation
+  \begin{itemize}
+  \item ``read'':  $r(x,y)$
+  \end{itemize}
+  and two laws
+  \begin{itemize}
+  \item Constancy law $r(x,x) = x$
+  \item Diagonal law $r(r(x_{00},x_{01}), r(x_{10},x_{11})) = r(x_{00},x_{11})$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Algebraic Theory of Mutable State]
+  The algebraic theory of mutable boolean state $\Tmut$ consists of two
+  operations
+  \begin{itemize}
+  \item binary operation ``read'': $r(x,y)$
+  \item two unary operations ``set 0'' $s_0(x)$ and ``set 1'' $s_1(x)$
+  \end{itemize}
+  Subject to the following laws
+  \begin{itemize}
+  \item Diagonal law: $r(r(x_{00},x_{01}), r(x_{10},x_{11})) = r(x_{00},x_{11})$
+  \item Read-set: $r(s_0(x), s_1(x)) = x$
+  \item Set-read: $s_i(r(x_0,x_1)) = s_i(x_i)$
+  \item Set-set: $s_i(s_j(x)) = s_j(x)$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Free Algebra]
+  A free $T$-algebra on a set $A$ for an algebraic theory $T$ consists of the following data:
+  \begin{itemize}
+  \item An algebra $F A$
+  \item A function $\eta : A \to UFA$
+  \item Such that for every algebra $Y$ pre-composition with $\eta$ is
+    a bijection $\textrm{T-Alg}(FA,Y) \to \textrm{Set}(A, UB)$ from
+    homomorphisms out of the free algebra on $A$ to functions into the
+    underlying set of the algebra $B$
+  \end{itemize}
+\end{definition}
+
+\begin{problem}{Relating properties of adjoint functors and their (co)-units}
+  Prove Lemma 4.5.13 from Riehl's \emph{Category Theory in Context},
+  page 140. Explain precisely how the case for unit follows from the
+  case for co-unit (or vice-versa) by duality.
+\end{problem}
+
+\begin{problem}{Normal forms for computational algebras}
+  \begin{enumerate}
+  \item Let $A$ be a set. Define a $\Timm$-algebra structure whose underlying set is $A^2$ and show that it is the free $\Timm$-algebra on $A$.
+  \item Show that for any $\Tmut$-algebra, the read operation satisfies the axioms of a $\Timm$-algebra.
+  \item Let $A$ be a set. Define a $\Tmut$-algebra structure whose underlying set is $(2 \times A)^2$ and show that it is the free $\Tmut$-algebra on $A$.
+  \end{enumerate}
+\end{problem}
+
+\end{document}

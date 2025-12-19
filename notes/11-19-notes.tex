@@ -1,0 +1,274 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{tikz-cd}
+% geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\newcommand{\self}{\mathrm{self}}
+\newcommand{\tm}{\mathrm{Tm}}
+\newcommand{\pow}{\mathscr P}
+\newcommand{\sem}[1]{\llbracket#1\rrbracket}
+\newcommand{\semprod}[1]{\llbracket#1\rrbracket}
+\newcommand{\semccc}[1]{\llparenthesis#1\rrparenthesis}
+\newcommand{\sole}{\mathrm{sole}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\app}{\mathrm{app}}
+\newcommand{\Thunk}{\mathrm{Thunk}}
+\newcommand{\Ret}{\mathrm{Ret}}
+\newcommand{\ret}{\mathrm{ret}}
+\newcommand{\Let}{\mathrm{let}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\case}{\mathrm{case}}
+\newcommand{\Put}{\mathrm{put}}
+\newcommand{\Get}{\mathrm{get}}
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\TAlg}{T\text{-Alg}}
+\newcommand{\crash}{\mathrm{crash}}
+\newcommand{\Un}[1]{\mathrm{Un}_{#1}}
+\newcommand{\cat}[1]{\mathcal{#1}}
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{Section \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize Scribed Notes}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Lecture 24: Call by Push Value}
+\author{Lecturer: Max S. New\\
+  Scribe: Conner Rose}
+\date{November 19, 2025}
+\maketitle
+
+\section{Call by Push Value}
+
+Recall, in CBPV, we have value types $A$ and computation types $B$. We have the
+following value types: $1 \mid A + A^\prime \mid \Thunk B$. Additionally, we
+have computation types $A \to B \mid \Ret A$. We have three different types of
+terms:
+\begin{enumerate}
+  \item $\Gamma \vdash V : A$ pure/values
+
+  \item $\Gamma \vdash M : B$ computations
+
+  \item $\Gamma \mid \bullet : B \vdash S : B^\prime$ stacks/strict/linear
+\end{enumerate}
+Note that a lot of the notation for value and computation types are the same,
+we will abuse this. When we say $\Gamma \mid \Delta \vdash M : B$, where, in
+the context of computations, $\Delta$ disappears and otherwise is treated as
+$\bullet : B^\prime$.
+
+We claim that CBPV is ``nicer'' than either CBN or CBV. Let's see why. We have
+an introduction rule:
+\[ \inferrule{\Gamma \vdash V : A}{\Gamma \mid \cdot \vdash \ret V : \Ret A} \]
+and an elimination rule:
+\[ \inferrule{\Gamma \mid \Delta \vdash M : \Ret A \qquad \Gamma, x : A \mid
+    \cdot \vdash N : B}
+  {\Gamma \mid \Delta \vdash x \leftarrow M; N : B} \]
+Why is this nicer exactly? Well, these correspond exactly to our $\beta$ and
+$\eta$-rules in lambda calculus. The $\beta$-rule is
+\[x \leftarrow V; N = N[V / x]\] and the $\eta$-rule is just
+\[
+  S[\bullet : \mathrm{Ret} A] = x \leftarrow \bullet; S[\mathrm{Ret} x],
+\]
+and, by substitutivity,
+\[
+  S[M : \mathrm{Ret} A] = x \leftarrow M; S[\mathrm{ret} x]
+  .\]
+Recall, that we had three monad rules for the let seen previously.
+We had a weak $\eta$-rule, given by
+\[
+  (\Let x = M; \ret x) = M;
+\]
+and an associativity rule, given by
+\[
+  \bigg(\Let y = (\Let x = M; N) ; P\bigg)
+  =
+  \bigg(\Let x = M; \Let y = N; P\bigg)
+  .\]
+The analog of the first of these is,
+\[
+  (x \leftarrow M; \ret x) = M
+\]
+and the second is
+\[
+  (y \leftarrow (x \leftarrow \bullet; N); P)[M / \bullet]
+  = x \leftarrow M; y \leftarrow N; P.
+\]
+We have an introduction rule for Thunk types as well,
+\[
+  \inferrule{\Gamma \mid \cdot \vdash M : B}{\gamma \vdash \{M\} : \Thunk B}
+\]
+and an elimination rule
+\[
+  \inferrule{\Gamma \mid \cdot \vdash V : \Thunk B}{\Gamma \vdash !V : B}
+\]
+The corresponding $\beta$-rule is then $!\{M\} = M$ and the corresponding
+$\eta$-rule is $V = \{!V\}$.
+
+As for functions, we have
+\[
+  \inferrule{\Gamma, x : A \mid \Delta \vdash M : B}
+  {\Gamma \mid \Delta \vdash \lambda x . M : A \to B}
+\]
+and
+\[
+  \inferrule{\Gamma \mid \Delta \vdash M : A \to B \qquad \Gamma \vdash V : A}
+  {\Gamma \mid \Delta M V : B}
+  .\]
+With corresponding $\beta$-rule $(\lambda x . M)V = M[V / x]$ and $\eta$-rule
+$(M : A \to B) = \lambda x. Mx$.
+
+We have our regular notion of coproduct types. For value types,
+\[
+  \inferrule{\Gamma \vdash V : A_i}{V \vdash \sigma_i V : A_1 + A_2} \qquad
+  \inferrule{\Gamma \vdash V : A_1 + A_2 \qquad \Gamma, x_i : A_i \vdash V_i :
+    A^\prime}{\Gamma \vdash \case V \{\sigma_i x_i \to V_i, cdots\} : A'}
+\]
+and similarly for computations,
+\[
+  \inferrule{\Gamma \vdash V : A_1 + A_2 \qquad \Gamma, x_i : A_i \mid \Delta \vdash M_i :
+    B}{\Gamma \mid \Delta \vdash \case V \{\sigma_i x_i \to M_i, \cdots\} : B}
+\]
+with $\beta$ and $\eta$-rules of \[\case \sigma_i V \{\sigma_i x_i \to V_i\} = V_i[V / x_i]\]
+and \[V[x : A_1 + A_2] = \case x \{\sigma_i x_i \to V[\sigma_i x_i / x]\},\]
+replacing $V$ with $M$ appropriately for computations.
+
+We have natural rules for the unit type as well.
+
+\section{Algebraic Theories for CBPV}
+
+We have two equivalent ways to add equational theories to CBPV.
+\subsection{First Approach}
+The first involves adding an algebra structure to any judgement. For any
+operation $\op : X^n \to X$, we have a rule,
+\[
+  \inferrule{\Gamma \mid \cdot \vdash M_i : B}
+  {\Gamma \mid \cdot \vdash \op(\ldots, M_i, \ldots) : B}
+\]
+I.e., terms of type $B$ form an algebra.
+We can also add any axioms we'd like. For instance, if we wanted to encode that
+$\Put_i(x) = x$, we'd simply have
+\[
+  \inferrule{\Gamma \mid \cdot \vdash M : B}
+  {\Gamma \mid \cdot \vdash \Put_i M : B}
+\]
+and for $\crash$, we have
+\[
+  \inferrule{}{\Gamma \mid \cdot \vdash \crash() : B}
+\]
+and for $\Get$, we have
+\[
+  \inferrule{\Gamma \mid \cdot \vdash M_i : B}{\Gamma \mid \cdot \vdash \Get(\ldots, M_i, \ldots) : B}
+\]
+Additionally, for stacks to be homomorphic, we need
+$S[\op(\ldots, M_i, \ldots)] = \op(\ldots, S[M_i], \ldots)$
+\subsection{Second Approach}
+Instead, now for $\op : X^n \to X$, let's take $\op() : \Ret n$. Crash
+naturally returns the empty type, i.e., $\crash() : \Ret 0$. Put simply
+returns, so $\Put_i : \Ret 1$. For $\Get : X^n \to X$, we have $\Get() : \Ret
+  n$.
+\section{Semantics}
+Our simplest model is $\Set \rightleftarrows \TAlg$. We can combine this
+free-forgetful adjunction with $\Set(S \times -, -) \cong \Set(-, (-)^S)$ to
+add state, like so
+\[
+  \begin{tikzpicture}[baseline=(current bounding box.center)]
+    \node (C) at (-3,0) {$\Set$};
+    \node (A) at (0,0) {$\Set$};
+    \node (B) at (3,0) {$\TAlg$};
+
+    \draw[->, bend left=20] (C) to node[above] {$S \times -$} (A);
+    \draw[->, bend left=20] (A) to node[below] {$S \Rightarrow -$} (C);
+
+    \draw[->, bend left=20] (A) to node[above] {$F$} (B);
+    \draw[->, bend left=20] (B) to node[below] {$U$} (A);
+
+    \node at (1.4,0) {\rotatebox{90}{$\vdash$}};
+    \node at (-1.5,0) {\rotatebox{90}{$\vdash$}};
+  \end{tikzpicture}
+\]
+The idea here is that $\Ret A$ is interpreted as $F(S \times A)$, i.e., you
+return the value and the state. $\Thunk B$ gets interpreted as
+$(S \Rightarrow UB) \cong U(S \to B)$.
+
+We can model value types as objects in $\Set$ and computation types as objects
+in $\Set^\op$, via the adjunction
+\[
+  \begin{tikzpicture}[baseline=(current bounding box.center)]
+    \node (A) at (0,0) {$\Set^\op$};
+    \node (B) at (3,0) {$\Set$};
+
+    \draw[->, bend left=20] (A) to node[above] {$- \Rightarrow F 1$} (B);
+    \draw[->, bend left=20] (B) to node[below] {$- \Rightarrow F 1$} (A);
+
+    \node at (1.5,0) {\rotatebox{90}{$\vdash$}};
+  \end{tikzpicture}
+\]
+This looks a little weird but notice that we have an adjunction
+\[
+  \begin{tikzpicture}[baseline=(current bounding box.center)]
+    \node (A) at (0,0) {$\cat{C}^\op$};
+    \node (B) at (3,0) {$\cat{C}$};
+
+    \draw[->, bend left=20] (A) to node[above] {$- \Rightarrow A$} (B);
+    \draw[->, bend left=20] (B) to node[below] {$- \Rightarrow A$} (A);
+
+    \node at (1.5,0) {\rotatebox{90}{$\vdash$}};
+  \end{tikzpicture}
+\]
+for any cartesian closed category $\cat{C}$, as
+\begin{align*}
+  \cat{C}^(X \times Y, A)         & \cong \cat{C}(X \times Y, A)      \\
+  \cat{C}^(Y, X \Rightarrow A)    & \cong \cat{C}(X, Y \Rightarrow A) \\
+  \cat{C}^\op(X \Rightarrow A, Y) & \cong \cat{C}(X, Y \Rightarrow A)
+\end{align*}
+We have the following interpretation rules
+\begin{align*}
+  [\![\Ret A]\!]   & := [\![A]\!] \to F 1          \\
+  [\![A \to B]\!]  & := [\![A]\!] \times [\![B]\!] \\
+  [\![\Thunk B]\!] & := [\![B]\!] \to F 1
+\end{align*}
+
+\subsection{Canonicity}
+For value type term $\cdot \vdash V : n$, then $V = \sigma_i ()$ for a unique
+$i$. For computation type term $\cdot \mid \cdot \vdash M : \Ret n$, then if
+the theory is empty (i.e. we have no operations) $M = \ret V = \ret(\sigma_i
+    ()))$. For the nontrivial case, we want
+\begin{align*}
+  g : n & \to \cdot \vdash V : n \\
+  i     & \mapsto \sigma_i ()
+\end{align*}
+to be a bijection. Since very computation type has an algebra structure,
+there is a homomorphism $f : F n \to \cdot \mid \cdot \vdash m : \Ret n$.
+Recall that by the universal property of the free algebra, any function $n \to
+  \cdot \mid \cdot M : \Ret n$, uniquely extends to such a homomorphism. So,
+we take $f(i) = \ret g(i)$. Then $f$ is a homomorphism of algebras.
+\end{document}

@@ -1,0 +1,158 @@
+\documentclass[12pt]{article}
+
+%AMS-TeX packages
+\usepackage{amssymb,amsmath,amsthm,stmaryrd}
+%geometry (sets margin) and other useful packages
+\usepackage[margin=1.25in]{geometry}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathpartir}
+\usepackage{minted}
+
+
+\usepackage[sort&compress,square,comma,authoryear]{natbib}
+\bibliographystyle{plainnat}
+
+%
+%Redefining sections as problems
+%
+\makeatletter
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newenvironment{problem}{\@startsection
+       {section}
+       {1}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       {%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       \begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+%
+%Fancy-header package to modify header/page numbering
+%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+%% \lhead{Problem \thesection}
+\chead{}
+\rhead{\thepage}
+\lfoot{\small\scshape EECS 598: Category Theory}
+\cfoot{}
+\rfoot{\footnotesize PS 5}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%Contents of problem set
+%
+
+\newcommand{\rec}{\textrm{rec}}
+\newcommand{\zero}{\textrm{zero}}
+\newcommand{\suc}{\textrm{succ}}
+
+\newcommand{\meet}{\wedge}
+\newcommand{\join}{\vee}
+\newcommand{\iplmeets}{\mathrm{IPL}(\top,\meet)}
+\newcommand{\iplneg}{\mathrm{IPL}(\top,\meet,\supset)}
+\newcommand{\downset}{\mathcal P_{\downarrow}}
+\newcommand{\down}{{\downarrow}}
+
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\casePlus}[5]{\mathrm{case}_{+}\,{#1}\{\sigma_1{#2}\to {#3}|\sigma_2{#4}\to {#5}\}}
+\newcommand{\caseZero}[1]{\mathrm{case}_0\,{#1}\{\}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\lfpt}{\Sigma_{\mathrm{lfpt}}}
+
+\newcommand{\cat}{\mathcal}
+
+\newcommand{\stlccart}{\mathrm{STLC}(1,\times)}
+\newcommand{\stlcccc}{\mathrm{STLC}(1,\times,\Rightarrow)}
+\newcommand{\Tm}{\mathrm{Tm}}
+\newcommand{\sem}[1]{\llbracket\cdot\rrbracket}
+
+\begin{document}
+
+\title{Problem Set 5}
+\date{Released: October 30, 2025\\
+  %% Updated Octover 22, 2025\\
+  Due: Novemmber 13, 2025, 11:59pm
+}
+\maketitle
+
+Submit your solutions to this homework on Canvas alone or in a group of 2.
+Your solutions must be submitted in pdf produced using LaTeX.
+
+\begin{definition}{Algebras, Initial Algebras}
+  Let $F : \cat C \to \cat C$ be a functor.
+  An $F$-algebra is a morphism $\alpha : F X \to X$.
+
+  A homomorphism from $\alpha : F X \to X$ to $\beta : F Y \to Y$ is a
+  morphism $\phi : X \to Y$ such that $\phi \circ \alpha = \beta \circ
+  F$. Identity and composition of homomorphisms is given by identity
+  and composition in $\cat C$. This defines a category $F$-Alg.
+
+  An initial $F$-algebra is an initial object in $F$-Alg. Given an
+  initial algebra $i : F(\mu F) \to \mu F$, and an algebra $\alpha : F
+  X \to X$, we write $\textrm{rec}^F\alpha : \mu F \to X$ to mean the
+  unique homomorphism from $i$ to $\alpha$.
+\end{definition}
+
+\begin{definition}
+  Let $\cat C$ be a bicartesian category. A natural numbers object
+  (NNO) in $\cat C$ is an initial algebra of the functor $F_{\mathbb
+    N} X = 1 + X$.
+\end{definition}
+
+
+\begin{problem}{Programming with Peano}
+  Let $\cat C$ be a cartesian closed category with a natural numbers
+  object $i : F_{\mathbb N} N \to N$.
+
+  \begin{itemize}
+  \item Define a morphism $\textrm{add} : N \times N \to N$ that when
+    $\cat C$ is the category of sets is the usual addition operation on
+    natural numbers.
+  \item Prove that zero is a left and right unit of $\textrm{add}$. That is
+    \[ \textrm{add} \circ (\zero{}\circ {!}, \id_N) = \id_N : N \to N \]
+    and
+    \[ \textrm{add} \circ (\id_N, \zero{}\circ {!}) = \id_N : N \to N \]
+
+    where $\zero{} : 1 \to N$ is $i \circ \sigma_1$.
+
+    HINT: depending on how you define $\textrm{add}$, one of these two
+    will be easy and one will require the uniqueness property of an NNO.
+  \end{itemize}
+\end{problem}
+
+\begin{problem}{Generic Map-Fold Fusion}
+  Let $\cat C$ be any category and $F, G : \cat C \to \cat C$ be
+  functors.  Assume $i : F(\mu F) \to \mu F$ is an initial
+  $F$-algebra, and $j : G(\mu G) \to G$ is an initial
+  $G$-algebra. Then for any natural transformation $\tau : F
+  \Rightarrow G$ and $G$-algebra $\alpha : G X \to X$, we can
+  construct a ``pipeline'' $\textrm{rec}^G\alpha \circ \textrm{rec}^F
+  (j \circ \tau_{\mu G})$. This pipeline first ``maps'', transforming
+  the $F$ nodes of the $\mu F$-tree into $G$ nodes, constructing a
+  $\mu G$-tree. Then we perform a ``fold'', reducing the $\mu G$ tree
+  into a single $X$ value. 
+
+  Prove that any such pipeline can be fused into a single fold:
+  construct an $F$-algebra $\beta : FX \to X$ such that
+  \[ \textrm{rec}^F \beta = \textrm{rec}^G\alpha \circ \textrm{rec}^F (j \circ \tau_{\mu G})\]
+\end{problem}
+
+\end{document}
